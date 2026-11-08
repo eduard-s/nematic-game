@@ -1,0 +1,217 @@
+{
+  "title": "Nematic game",
+  "description": "A playful 2D material lab with swirl, pull and comb brushes, liquid crystals, charged particles and optional discoveries.",
+  "intro": "A material you can mess with. Give it a tiny tornado.",
+  "controlsTitle": "Sample controls",
+  "startingState": "Structure",
+  "currentState": "Now:",
+  "materialTitle": "Material",
+  "presetHint": "Switch structure. Your settings stay put.",
+  "changeStructure": "Change structure without resetting any parameter",
+  "shapeTitle": "Shape & motion",
+  "modeHints": {
+    "liquid": "Free positions and independent orientations. Fields can still align the rods.",
+    "nematic": "Shared orientation, free positions. Alignment adds to this mode's base coupling.",
+    "solid": "Fixed lattice sites. Heat adds vibration and softens the springs."
+  },
+  "display": {
+    "title": "Display",
+    "mesh": "Lattice connections",
+    "directors": "Local alignment guides",
+    "trails": "Ion trails",
+    "detail": "Molecular detail",
+    "wakes": "Brush wakes",
+    "polarized": "Crossed polarizers",
+    "polarizedHint": "An illustrative orientation filter: rods at 45° look brightest. It does not change the physics."
+  },
+  "settling": "Settling",
+  "settlingDescription": "The rods are finding their places.",
+  "presets": [
+    {
+      "id": "liquid",
+      "label": "Liquid",
+      "description": "Loose, restless and terrible at following directions."
+    },
+    {
+      "id": "nematic",
+      "label": "Nematic",
+      "description": "Same axis. Still free to move around."
+    },
+    {
+      "id": "solid",
+      "label": "Solid",
+      "description": "Settled into a lattice. Finally, some commitment."
+    }
+  ],
+  "parameters": [
+    {
+      "id": "heat",
+      "label": "Heat",
+      "description": "How much the rods jitter.",
+      "low": "Cold",
+      "high": "Hot"
+    },
+    {
+      "id": "density",
+      "label": "Crowding",
+      "description": "More rods in the same space.",
+      "low": "Loose",
+      "high": "Packed"
+    },
+    {
+      "id": "alignment",
+      "label": "Alignment force",
+      "description": "Adds to the structure's base alignment coupling.",
+      "modeHint": "Kept for Nematic and Solid; Liquid has no alignment coupling.",
+      "low": "Base coupling",
+      "high": "Stronger"
+    }
+  ],
+  "extraParameters": [
+    {
+      "id": "rodLength",
+      "label": "Rod length",
+      "description": "Changes molecular shape and collision spacing.",
+      "low": "Short",
+      "high": "Long"
+    },
+    {
+      "id": "viscosity",
+      "label": "Damping",
+      "description": "Slows translation and rotation.",
+      "low": "Free-flowing",
+      "high": "Sluggish"
+    },
+    {
+      "id": "repulsion",
+      "label": "Collision strength",
+      "description": "How hard the rods push each other away.",
+      "low": "Soft",
+      "high": "Firm"
+    },
+    {
+      "id": "stiffness",
+      "label": "Lattice stiffness",
+      "description": "How firmly a solid returns to its lattice.",
+      "modeHint": "Kept for Solid mode.",
+      "low": "Flexible",
+      "high": "Rigid"
+    },
+    {
+      "id": "stirring",
+      "label": "Stirring strength",
+      "description": "How strongly dragging disturbs the sample.",
+      "low": "Gentle",
+      "high": "Forceful"
+    }
+  ],
+  "orderLabel": "Orientational order",
+  "orderHint": "Measured from the rods on screen.",
+  "motionLabel": "Rod speed (RMS)",
+  "latticeLabel": "Lattice drift",
+  "directorLabel": "Shared axis",
+  "reset": "Reset sample",
+  "pause": "Pause motion",
+  "resume": "Resume motion",
+  "dragHint": "Hold or drag to play",
+  "legend": "Color follows orientation",
+  "fields": {
+    "electricTitle": "Electric field",
+    "electricStrength": "Electric strength",
+    "electricAngle": "Electric direction",
+    "electricResponse": "Electric rod response",
+    "electricHint": "Turns the rods. Positive and negative ions drift opposite ways.",
+    "angleHint": "0° sample right, 90° sample up.",
+    "magneticTitle": "Magnetic field",
+    "magneticStrength": "Magnetic strength",
+    "magneticAngle": "In-plane direction",
+    "magneticResponse": "Magnetic rod response",
+    "responseHint": "Positive aligns along the field; negative aligns across it.",
+    "planeLabel": "Field plane",
+    "planes": [
+      {
+        "value": "in-plane",
+        "label": "Along the sample"
+      },
+      {
+        "value": "out",
+        "label": "Out of the sample plane"
+      },
+      {
+        "value": "into",
+        "label": "Into the sample plane"
+      }
+    ],
+    "inPlaneHint": "Aligns the rods. Ions stay constrained to the sample plane.",
+    "throughPlaneHint": "Curves charged paths. Reverse the field to reverse the bend.",
+    "ionsTitle": "Ions & tracers",
+    "amountLabel": "Particle amount",
+    "chargeLabel": "Electrical charge",
+    "chargeStrength": "Charge strength",
+    "chargeHint": "Relative charge magnitude. 100% is the default.",
+    "ionMobility": "Particle mobility",
+    "mobilityHint": "Higher values reduce particle drag.",
+    "screening": "Electrostatic screening",
+    "screeningHint": "Shortens ion-to-ion forces. Zero leaves them unscreened.",
+    "chargedLabel": "Charged ions",
+    "neutralLabel": "Neutral tracers",
+    "chargedHint": "Equal positive and negative ions. Opposite charges attract.",
+    "neutralHint": "No charge: the tracers diffuse, collide and follow stirring.",
+    "ionKey": "ions",
+    "neutralKey": "neutral tracers",
+    "demoLabel": "Crossed fields",
+    "clearLabel": "Clear fields"
+  },
+  "modelNote": "Illustrative 2D model. Structure prepares a sample without changing your settings: liquid has no orientational coupling, nematic has base coupling, solid keeps spring-bound sites. Heat drives noise and softens springs. Fields stay uniform; ion forces are softened and optionally screened. Distances and speeds use simulation pixels. No reaction chemistry or calculated equilibrium phase diagram. Brushes apply local forces or orientation changes. Crossed polarizers is an illustrative orientation filter.",
+  "accessibleLabel": "Live material sample. Hold or drag to use the selected brush. Keys 1 to 4 select Stir, Swirl, Pull or Comb. Arrows move the brush; Space applies it. Escape pauses or resumes. All settings are in Sample controls.",
+  "fallback": "This playground needs JavaScript and a browser with Canvas support.",
+  "tools": {
+    "title": "Play with the sample",
+    "hint": "Pick a brush, then hold or drag on the sample.",
+    "stir": {
+      "label": "Stir",
+      "hint": "Drag to push. Tap to send a little shockwave."
+    },
+    "swirl": {
+      "label": "Swirl",
+      "hint": "Hold still to make a tiny tornado. The rods were not consulted."
+    },
+    "pull": {
+      "label": "Pull",
+      "hint": "Hold to gather rods and ions. Personal space is optional."
+    },
+    "comb": {
+      "label": "Comb",
+      "hint": "Drag to brush the rods along your path. Very small hairdressing."
+    },
+    "ripple": "Send a ripple",
+    "keyboard": "Keys 1–4 choose a brush. Arrows move it. Space applies it. Escape pauses."
+  },
+  "discoveries": {
+    "title": "Things to try",
+    "saved": "Discoveries stay in this browser. No deadlines.",
+    "complete": "Discovery unlocked:",
+    "items": [
+      {
+        "id": "vortex",
+        "title": "Tiny tornado",
+        "hint": "Use Swirl on a few rods for two seconds."
+      },
+      {
+        "id": "combed",
+        "title": "Molecular hairdresser",
+        "hint": "Brush a few rods with Comb for two seconds."
+      },
+      {
+        "id": "rebound",
+        "title": "A solid comeback",
+        "hint": "Stir a Solid out of place, then let it settle. Try less Heat."
+      },
+      {
+        "id": "crossed",
+        "title": "Ion slalom",
+        "hint": "Run Crossed fields for two seconds with charged ions."
+      }
+    ]
+  }
+}

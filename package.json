@@ -1,0 +1,58 @@
+{
+  "name": "@eduard-s/nematic-game",
+  "version": "0.1.0",
+  "description": "A React material lab with liquid, nematic and solid structures.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Eduard Smirnov",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduard-s/nematic-game.git"
+  },
+  "homepage": "https://github.com/eduard-s/nematic-game#readme",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/react/index.js",
+  "types": "./dist/react/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4174",
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-css.mjs",
+    "build:demo": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4174"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0 <20",
+    "react-dom": ">=18.2.0 <20"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "vite": "8.3.6"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
