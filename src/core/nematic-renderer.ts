@@ -1,21 +1,21 @@
 import { fieldVector, type NematicGame } from "./nematic-game.js";
 
 import { DEFAULT_THEME, rgb, alpha, type NematicTheme } from "./theme.js";
-const palettes = new WeakMap<NematicTheme, string[][]>();
+const palettes = new WeakMap<NematicTheme, string[]>();
 function colorsFor(theme: NematicTheme) {
   let colors = palettes.get(theme);
   if (!colors) {
     const a = rgb(theme.rodLow), b = rgb(theme.rodHigh);
-    colors = Array.from({ length: 64 }, (_, angle) => Array.from({ length: 8 }, (_, tint) => {
+    colors = Array.from({ length: 64 }, (_, angle) => {
       const w = (Math.cos(angle / 64 * Math.PI * 2) + 1) / 2;
-      return `rgb(${a.map((v, i) => Math.round((v + (b[i] - v) * w) * (0.92 + tint / 7 * 0.08))).join(" ")})`;
-    }));
+      return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * w)).join(" ")})`;
+    });
     palettes.set(theme, colors);
   }
   return colors;
 }
-function orientationColor(angle: number, tint: number, colors: string[][]) {
-  return colors[((Math.round(angle / Math.PI * 64) % 64) + 64) % 64][Math.min(7, Math.floor(tint * 8))];
+function orientationColor(angle: number, colors: string[]) {
+  return colors[((Math.round(angle / Math.PI * 64) % 64) + 64) % 64];
 }
 
 function drawArrow(ctx: CanvasRenderingContext2D, x: number, y: number, angle: number, length: number) {
@@ -60,11 +60,12 @@ function drawFields(ctx: CanvasRenderingContext2D, world: NematicGame, theme: Ne
 export type MaterialDisplay = { mesh: boolean; directors: boolean; trails: boolean; detail: boolean; wakes: boolean; polarized: boolean };
 export const DEFAULT_DISPLAY: Readonly<MaterialDisplay> = Object.freeze({ mesh: true, directors: false, trails: true, detail: true, wakes: true, polarized: false });
 
-export function renderNematicGame(ctx: CanvasRenderingContext2D, world: NematicGame, reducedMotion: boolean, display: MaterialDisplay = DEFAULT_DISPLAY, theme: NematicTheme = DEFAULT_THEME) {
+export function renderNematicGame(ctx: CanvasRenderingContext2D, world: NematicGame, reducedMotion: boolean, display: MaterialDisplay = DEFAULT_DISPLAY, theme: NematicTheme = DEFAULT_THEME, transparent = false) {
   const background = theme.sample, rodColors = colorsFor(theme);
   const { width: w, height: h, solidness: solid, rods } = world;
   const line = (a: { x: number; y: number }, b: { x: number; y: number }) => { ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); };
-  ctx.fillStyle = background; ctx.fillRect(0, 0, w, h);
+  if (transparent) ctx.clearRect(0, 0, w, h);
+  else { ctx.fillStyle = background; ctx.fillRect(0, 0, w, h); }
   ctx.save(); drawFields(ctx, world, theme);
   if (display.wakes && !reducedMotion) {
     ctx.save(); ctx.lineCap = "round";
@@ -114,15 +115,11 @@ export function renderNematicGame(ctx: CanvasRenderingContext2D, world: NematicG
   rods.forEach(r => {
     ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(r.angle); ctx.lineCap = "round";
     if (display.polarized) ctx.globalAlpha = 0.12 + Math.sin(2 * r.angle) ** 2 * 0.88;
-    ctx.strokeStyle = "rgba(14,26,18,0.35)"; ctx.lineWidth = 8;
-    ctx.beginPath(); ctx.moveTo(-length / 2 + 3, 2); ctx.lineTo(length / 2 - 3, 2); ctx.stroke();
-    ctx.strokeStyle = orientationColor(r.angle, r.tint, rodColors); ctx.lineWidth = 6.5;
+    ctx.strokeStyle = orientationColor(r.angle, rodColors); ctx.lineWidth = 5;
     ctx.beginPath(); ctx.moveTo(-length / 2 + 3, 0); ctx.lineTo(length / 2 - 3, 0); ctx.stroke();
-    ctx.strokeStyle = "rgba(226,237,222,0.4)"; ctx.lineWidth = 1.2;
-    ctx.beginPath(); ctx.moveTo(-length / 2 + 4, -1.5); ctx.lineTo(length / 2 - 4, -1.5); ctx.stroke();
     if (display.detail && length > 16) {
-      ctx.fillStyle = "rgba(30,50,37,0.3)";
-      for (const fraction of [-0.28, 0, 0.28]) { ctx.beginPath(); ctx.arc((length - 6) * fraction, 0.6, 1.1, 0, Math.PI * 2); ctx.fill(); }
+      ctx.strokeStyle = alpha(transparent ? theme.ink : theme.surface, 0.55); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, -1.5); ctx.lineTo(0, 1.5); ctx.stroke();
     }
     ctx.restore();
   });
@@ -134,10 +131,9 @@ export function renderNematicGame(ctx: CanvasRenderingContext2D, world: NematicG
       ion.trail.forEach((p, i) => { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.stroke(); ctx.restore();
     }
     ctx.save(); ctx.translate(ion.x, ion.y);
-    ctx.fillStyle = color; ctx.strokeStyle = "rgba(20,36,25,0.5)"; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    if (display.detail) { ctx.fillStyle = "rgba(239,242,237,0.45)"; ctx.beginPath(); ctx.arc(-1.7, -2, 1.6, 0, Math.PI * 2); ctx.fill(); }
-    ctx.strokeStyle = background; ctx.lineWidth = 1.2; ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = transparent ? theme.surface : background; ctx.lineWidth = 1.2; ctx.beginPath();
     if (!charged) ctx.ellipse(0, 0, 1.7, 2.7, 0, 0, Math.PI * 2);
     else {
       ctx.moveTo(-2.5, 0); ctx.lineTo(2.5, 0);

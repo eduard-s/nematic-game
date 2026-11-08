@@ -5,16 +5,16 @@ function colorsFor(theme) {
     let colors = palettes.get(theme);
     if (!colors) {
         const a = rgb(theme.rodLow), b = rgb(theme.rodHigh);
-        colors = Array.from({ length: 64 }, (_, angle) => Array.from({ length: 8 }, (_, tint) => {
+        colors = Array.from({ length: 64 }, (_, angle) => {
             const w = (Math.cos(angle / 64 * Math.PI * 2) + 1) / 2;
-            return `rgb(${a.map((v, i) => Math.round((v + (b[i] - v) * w) * (0.92 + tint / 7 * 0.08))).join(" ")})`;
-        }));
+            return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * w)).join(" ")})`;
+        });
         palettes.set(theme, colors);
     }
     return colors;
 }
-function orientationColor(angle, tint, colors) {
-    return colors[((Math.round(angle / Math.PI * 64) % 64) + 64) % 64][Math.min(7, Math.floor(tint * 8))];
+function orientationColor(angle, colors) {
+    return colors[((Math.round(angle / Math.PI * 64) % 64) + 64) % 64];
 }
 function drawArrow(ctx, x, y, angle, length) {
     ctx.save();
@@ -88,12 +88,16 @@ function drawFields(ctx, world, theme) {
     ctx.restore();
 }
 export const DEFAULT_DISPLAY = Object.freeze({ mesh: true, directors: false, trails: true, detail: true, wakes: true, polarized: false });
-export function renderNematicGame(ctx, world, reducedMotion, display = DEFAULT_DISPLAY, theme = DEFAULT_THEME) {
+export function renderNematicGame(ctx, world, reducedMotion, display = DEFAULT_DISPLAY, theme = DEFAULT_THEME, transparent = false) {
     const background = theme.sample, rodColors = colorsFor(theme);
     const { width: w, height: h, solidness: solid, rods } = world;
     const line = (a, b) => { ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); };
-    ctx.fillStyle = background;
-    ctx.fillRect(0, 0, w, h);
+    if (transparent)
+        ctx.clearRect(0, 0, w, h);
+    else {
+        ctx.fillStyle = background;
+        ctx.fillRect(0, 0, w, h);
+    }
     ctx.save();
     drawFields(ctx, world, theme);
     if (display.wakes && !reducedMotion) {
@@ -170,31 +174,19 @@ export function renderNematicGame(ctx, world, reducedMotion, display = DEFAULT_D
         ctx.lineCap = "round";
         if (display.polarized)
             ctx.globalAlpha = 0.12 + Math.sin(2 * r.angle) ** 2 * 0.88;
-        ctx.strokeStyle = "rgba(14,26,18,0.35)";
-        ctx.lineWidth = 8;
-        ctx.beginPath();
-        ctx.moveTo(-length / 2 + 3, 2);
-        ctx.lineTo(length / 2 - 3, 2);
-        ctx.stroke();
-        ctx.strokeStyle = orientationColor(r.angle, r.tint, rodColors);
-        ctx.lineWidth = 6.5;
+        ctx.strokeStyle = orientationColor(r.angle, rodColors);
+        ctx.lineWidth = 5;
         ctx.beginPath();
         ctx.moveTo(-length / 2 + 3, 0);
         ctx.lineTo(length / 2 - 3, 0);
         ctx.stroke();
-        ctx.strokeStyle = "rgba(226,237,222,0.4)";
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.moveTo(-length / 2 + 4, -1.5);
-        ctx.lineTo(length / 2 - 4, -1.5);
-        ctx.stroke();
         if (display.detail && length > 16) {
-            ctx.fillStyle = "rgba(30,50,37,0.3)";
-            for (const fraction of [-0.28, 0, 0.28]) {
-                ctx.beginPath();
-                ctx.arc((length - 6) * fraction, 0.6, 1.1, 0, Math.PI * 2);
-                ctx.fill();
-            }
+            ctx.strokeStyle = alpha(transparent ? theme.ink : theme.surface, 0.55);
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, -1.5);
+            ctx.lineTo(0, 1.5);
+            ctx.stroke();
         }
         ctx.restore();
     });
@@ -217,19 +209,10 @@ export function renderNematicGame(ctx, world, reducedMotion, display = DEFAULT_D
         ctx.save();
         ctx.translate(ion.x, ion.y);
         ctx.fillStyle = color;
-        ctx.strokeStyle = "rgba(20,36,25,0.5)";
-        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(0, 0, 6, 0, Math.PI * 2);
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
         ctx.fill();
-        ctx.stroke();
-        if (display.detail) {
-            ctx.fillStyle = "rgba(239,242,237,0.45)";
-            ctx.beginPath();
-            ctx.arc(-1.7, -2, 1.6, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.strokeStyle = background;
+        ctx.strokeStyle = transparent ? theme.surface : background;
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         if (!charged)

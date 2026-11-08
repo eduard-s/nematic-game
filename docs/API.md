@@ -13,6 +13,7 @@ The package also exports `NematicGame` as an alias.
 | `initialPaused` | `false` | Pauses the initial sample. Reduced motion also pauses the sample. |
 | `seed` | Random unsigned 32-bit integer | Makes the initial arrangement repeatable at the same dimensions. |
 | `theme` | `DEFAULT_THEME` | Replaces selected colors. Colors use six-digit hex notation. |
+| `transparentCanvas` | `false` | Shows the host page through the canvas. Use rod and ion colors that contrast with the host page. |
 | `storageKey` | `"nematic-game-discoveries-v1"` | Selects the key for discoveries. `false` disables storage. |
 | `onMetrics` | None | Receives measured order, speed, count, lattice error, and shared axis. |
 | `className` | None | Adds a class to the root element. |
@@ -22,6 +23,7 @@ Initial props apply once per mount.
 Reset sample restores the configuration from that mount.
 A new React `key` starts a new sample with new initial props.
 The theme can change after the component mounts.
+The `transparentCanvas` value can change after the component mounts.
 The `onMetrics` callback can change after the component mounts.
 
 The component uses container queries.
@@ -72,12 +74,14 @@ Negative rod responses align across a field.
 `directors` and `polarized` default to `false`.
 Each display value is a Boolean.
 Display values do not change the physics.
+The `detail` value shows flat center marks on the rods.
+The rods and ions have no shadows or highlights.
 
 ## Colors
 
 | Key | Default | Use |
 | --- | --- | --- |
-| `surface` | `#DFE5DC` | Surface behind the controls. |
+| `surface` | `#DFE5DC` | Reference color for small control details and fallback text. The component does not paint a page background. |
 | `ink` | `#303832` | Control text. |
 | `accent` | `#785448` | Sliders and focus outlines. |
 | `controlSurface` | `#EFF2ED` | Light control details. |

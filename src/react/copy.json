@@ -8,7 +8,7 @@
   "materialTitle": "Material",
   "presetHint": "Switch structure. Your settings stay put.",
   "changeStructure": "Change structure without resetting any parameter",
-  "shapeTitle": "Shape & motion",
+  "shapeTitle": "Motion",
   "modeHints": {
     "liquid": "Free positions and independent orientations. Fields can still align the rods.",
     "nematic": "Shared orientation, free positions. Alignment adds to this mode's base coupling.",
@@ -19,7 +19,7 @@
     "mesh": "Lattice connections",
     "directors": "Local alignment guides",
     "trails": "Ion trails",
-    "detail": "Molecular detail",
+    "detail": "Rod center marks",
     "wakes": "Brush wakes",
     "polarized": "Crossed polarizers",
     "polarizedHint": "An illustrative orientation filter: rods at 45° look brightest. It does not change the physics."
@@ -59,22 +59,23 @@
       "high": "Packed"
     },
     {
-      "id": "alignment",
-      "label": "Alignment force",
-      "description": "Adds to the structure's base alignment coupling.",
-      "modeHint": "Kept for Nematic and Solid; Liquid has no alignment coupling.",
-      "low": "Base coupling",
-      "high": "Stronger"
-    }
-  ],
-  "extraParameters": [
-    {
       "id": "rodLength",
       "label": "Rod length",
       "description": "Changes molecular shape and collision spacing.",
       "low": "Short",
       "high": "Long"
     },
+    {
+      "id": "alignment",
+      "label": "Alignment force",
+      "description": "Adds to the structure's base alignment coupling.",
+      "modeHint": "Kept for Nematic and Solid; Liquid has no alignment coupling.",
+      "low": "Base coupling",
+      "high": "Stronger",
+      "shortLabel": "Alignment"
+    }
+  ],
+  "extraParameters": [
     {
       "id": "viscosity",
       "label": "Damping",
@@ -87,7 +88,8 @@
       "label": "Collision strength",
       "description": "How hard the rods push each other away.",
       "low": "Soft",
-      "high": "Firm"
+      "high": "Firm",
+      "shortLabel": "Collisions"
     },
     {
       "id": "stiffness",
@@ -95,12 +97,13 @@
       "description": "How firmly a solid returns to its lattice.",
       "modeHint": "Kept for Solid mode.",
       "low": "Flexible",
-      "high": "Rigid"
+      "high": "Rigid",
+      "shortLabel": "Stiffness"
     },
     {
       "id": "stirring",
-      "label": "Stirring strength",
-      "description": "How strongly dragging disturbs the sample.",
+      "label": "Brush strength",
+      "description": "How strongly a brush disturbs the sample.",
       "low": "Gentle",
       "high": "Forceful"
     }
@@ -131,15 +134,15 @@
     "planes": [
       {
         "value": "in-plane",
-        "label": "Along the sample"
+        "label": "In plane"
       },
       {
         "value": "out",
-        "label": "Out of the sample plane"
+        "label": "Out of plane"
       },
       {
         "value": "into",
-        "label": "Into the sample plane"
+        "label": "Into plane"
       }
     ],
     "inPlaneHint": "Aligns the rods. Ions stay constrained to the sample plane.",
@@ -163,7 +166,7 @@
     "clearLabel": "Clear fields"
   },
   "modelNote": "Illustrative 2D model. Structure prepares a sample without changing your settings: liquid has no orientational coupling, nematic has base coupling, solid keeps spring-bound sites. Heat drives noise and softens springs. Fields stay uniform; ion forces are softened and optionally screened. Distances and speeds use simulation pixels. No reaction chemistry or calculated equilibrium phase diagram. Brushes apply local forces or orientation changes. Crossed polarizers is an illustrative orientation filter.",
-  "accessibleLabel": "Live material sample. Hold or drag to use the selected brush. Keys 1 to 4 select Stir, Swirl, Pull or Comb. Arrows move the brush; Space applies it. Escape pauses or resumes. All settings are in Sample controls.",
+  "accessibleLabel": "Live material sample. Hold or drag to use the selected brush. Keys 1 to 4 select Stir, Swirl, Pull or Comb. Arrows move the brush; Space applies it. Escape pauses or resumes. The controls change the material, fields, and particles.",
   "fallback": "This playground needs JavaScript and a browser with Canvas support.",
   "tools": {
     "title": "Play with the sample",
@@ -185,7 +188,8 @@
       "hint": "Drag to brush the rods along your path. Very small hairdressing."
     },
     "ripple": "Send a ripple",
-    "keyboard": "Keys 1–4 choose a brush. Arrows move it. Space applies it. Escape pauses."
+    "keyboard": "Keys 1–4 choose a brush. Arrows move it. Space applies it. Escape pauses.",
+    "rippleShort": "Ripple"
   },
   "discoveries": {
     "title": "Things to try",
@@ -205,13 +209,20 @@
       {
         "id": "rebound",
         "title": "A solid comeback",
-        "hint": "Stir a Solid out of place, then let it settle. Try less Heat."
+        "hint": "Stir a Solid. Let it recover. Use less Heat."
       },
       {
         "id": "crossed",
         "title": "Ion slalom",
-        "hint": "Run Crossed fields for two seconds with charged ions."
+        "hint": "Run Crossed fields with charged ions for two seconds."
       }
     ]
-  }
+  },
+  "groups": {
+    "title": "Controls",
+    "particles": "Particles",
+    "readouts": "Readouts"
+  },
+  "resetShort": "Reset",
+  "orderShort": "Order"
 }

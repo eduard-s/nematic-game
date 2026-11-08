@@ -9,4 +9,4 @@ export type MaterialDisplay = {
     polarized: boolean;
 };
 export declare const DEFAULT_DISPLAY: Readonly<MaterialDisplay>;
-export declare function renderNematicGame(ctx: CanvasRenderingContext2D, world: NematicGame, reducedMotion: boolean, display?: MaterialDisplay, theme?: NematicTheme): void;
+export declare function renderNematicGame(ctx: CanvasRenderingContext2D, world: NematicGame, reducedMotion: boolean, display?: MaterialDisplay, theme?: NematicTheme, transparent?: boolean): void;

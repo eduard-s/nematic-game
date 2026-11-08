@@ -2,9 +2,21 @@
 
 Nematic game is a React component and a standalone web app for an interactive 2D material model.
 The lab has Liquid, Nematic, and Solid modes, electric and magnetic fields, ions, and local brushes.
-The field uses the full component width.
-The controls appear below the field.
-Only the document scrolls.
+
+On desktop, the field uses about 52% of the component width.
+Material, Motion, and Display form one column of three groups on the left.
+Electric field, Magnetic field, and Particles form one column of three groups on the right.
+On narrow screens, those groups appear below the field.
+All six settings groups stay visible.
+Do not use collapsible groups.
+
+Put Readouts and Things to try below the field, outside Controls.
+
+Structure, pause, and reset appear above the field.
+Brushes and Ripple appear below it.
+The particles use flat colors without shadows or highlights.
+The component and canvas can show the host page background.
+The component has no pinned sections or inner scroll containers.
 
 [Open the lab](https://esmirnov.ai/nematic-game/) · [Component API](docs/API.md) · [Model and limits](docs/MODEL.md) · [Demo deployment](docs/DEPLOY.md)
 
@@ -15,7 +27,7 @@ The component needs React 18.2 or React 19.
 Install React in the host app.
 
 ```sh
-npm install https://github.com/eduard-s/nematic-game/archive/refs/tags/v0.1.0.tar.gz
+npm install https://github.com/eduard-s/nematic-game/archive/refs/tags/v0.2.0.tar.gz
 ```
 
 Import the component and its stylesheet.
@@ -56,6 +68,8 @@ Set `storageKey={false}` to disable storage of discoveries.
 For Next.js, import the stylesheet in a layout or page.
 The package includes the `"use client"` directive.
 The host site supplies its header, footer, and navigation.
+Use `transparentCanvas` to show the host page through the field.
+Supply darker rod and ion colors for a light host page.
 
 ## Run the standalone app
 

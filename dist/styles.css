@@ -1,198 +1,175 @@
 .nematic-game {
   container: nematic / inline-size;
-  position: relative;
   width: 100%;
+  max-width: 1280px;
   min-width: 0;
+  margin-inline: auto;
   color: var(--nematic-ink, #303832);
   font: 16px/1.5 Arial, Helvetica, sans-serif;
   color-scheme: light;
-  background: var(--nematic-surface, #DFE5DC);
   --surface: var(--nematic-surface, #DFE5DC);
   --ink: var(--nematic-ink, #303832);
   --accent: var(--nematic-accent, #785448);
-  --link-hover: var(--nematic-accent, #785448);
   --reading-surface: var(--nematic-control-surface, #EFF2ED);
-  --code-surface: var(--nematic-subtle-surface, #DCE3D8);
-  --rule: color-mix(in oklch, var(--ink) 25%, transparent);
-  --material-sample-height: clamp(520px, 64svh, 680px);
+  --rule: color-mix(in oklch, var(--ink) 22%, transparent);
+  --track: color-mix(in oklch, var(--ink) 28%, var(--surface));
 }
 .nematic-game, .nematic-game * { box-sizing: border-box; }
-.nematic-game button, .nematic-game input, .nematic-game select { font-family: inherit; }
-.nematic-game button:focus-visible { outline: 2px solid var(--link-hover); outline-offset: 3px; }
-:where(.nematic-game) .material-lab { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
-:where(.nematic-game) .material-sample { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; min-width: 0; height: var(--material-sample-height); position: sticky; top: 0; z-index: 1; background: var(--nematic-sample); color: var(--reading-surface); }
-:where(.nematic-game) .material-sample-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1.25rem 0.25rem; }
-:where(.nematic-game) .material-sample-state { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
-:where(.nematic-game) .material-sample-state h2 { margin: 0; font: 700 0.875rem/1.4 "Courier New", Courier, monospace; }
-:where(.nematic-game) .material-state-prefix { font-size: 0.6875rem; font-weight: 400; opacity: 0.65; }
-:where(.nematic-game) .material-live-dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(78% 0.07 148); }
-:where(.nematic-game) .material-live-dot[data-paused="true"] { background: var(--accent); }
-:where(.nematic-game) .material-count { margin-left: 0.35rem; font-size: 0.6875rem; opacity: 0.6; font-variant-numeric: tabular-nums; }
-:where(.nematic-game) .material-pause { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; padding: 12px; border: 1px solid transparent; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
-:where(.nematic-game) .material-pause:hover { border-color: color-mix(in oklch, var(--surface), transparent 70%); background: color-mix(in oklch, var(--surface), transparent 95%); }
-:where(.nematic-game) .material-pause:focus-visible { outline-color: var(--surface); outline-offset: 2px; }
-:where(.nematic-game) .material-pause svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-:where(.nematic-game) .material-canvas { position: relative; flex: 1; min-height: 0; }
-:where(.nematic-game) .material-canvas canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
-:where(.nematic-game) .material-canvas canvas:active { cursor: grabbing; }
-:where(.nematic-game) .material-canvas canvas:focus-visible { outline: 1px dashed var(--surface); outline-offset: -5px; }
-:where(.nematic-game) .material-playbar { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 1.25rem 0; }
-:where(.nematic-game) .material-brushes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); flex: 1; gap: 4px; }
-:where(.nematic-game) .material-playbar button { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px; padding: 0.5rem 0.65rem; border: 1px solid color-mix(in oklch, var(--surface), transparent 75%); border-radius: 4px; background: transparent; color: var(--surface); font: 0.75rem Arial, Helvetica, sans-serif; cursor: pointer; }
-:where(.nematic-game) .material-playbar button:hover { background: color-mix(in oklch, var(--surface), transparent 92%); }
-:where(.nematic-game) .material-playbar button[aria-pressed="true"] { border-color: var(--nematic-rod-high); background: var(--nematic-rod-high); color: var(--ink); }
-:where(.nematic-game) .material-playbar button:focus-visible { outline: 2px solid var(--surface); outline-offset: 3px; }
-:where(.nematic-game) .material-playbar svg { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-:where(.nematic-game) .material-playbar kbd { opacity: 0.6; font: 0.625rem "Courier New", monospace; }
-:where(.nematic-game) .material-brush-hint { min-height: 2.8em; margin: 0.65rem 1.25rem 0; max-width: 65ch; color: color-mix(in oklch, var(--surface), transparent 15%); font: 0.75rem/1.4 Arial, Helvetica, sans-serif; }
-:where(.nematic-game) .material-discoveries legend { display: flex; justify-content: space-between; width: 100%; margin-bottom: 0.25rem; }
-:where(.nematic-game) .material-discoveries legend > span { font: 0.75rem "Courier New", monospace; color: var(--link-hover); }
-:where(.nematic-game) .material-discoveries ol { display: grid; gap: 1rem; padding: 0; margin: 1rem 0; list-style: none; }
-:where(.nematic-game) .material-discoveries li { display: flex; align-items: flex-start; gap: 0.7rem; }
-:where(.nematic-game) .material-discovery-mark { display: grid; place-items: center; flex: 0 0 26px; height: 26px; border: 1px solid var(--rule); border-radius: 50%; font: 0.625rem "Courier New", monospace; }
-:where(.nematic-game) .material-discovery-mark svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; }
-:where(.nematic-game) .material-discoveries li[data-complete="true"] .material-discovery-mark { background: var(--ink); color: var(--reading-surface); border-color: var(--ink); }
-:where(.nematic-game) .material-discoveries strong { display: block; font-size: 0.75rem; line-height: 1.5; font-weight: 600; }
-:where(.nematic-game) .material-discoveries li p { margin: 0.2rem 0 0; font-size: 0.6875rem; line-height: 1.6; color: color-mix(in oklch, var(--ink), transparent 22%); }
-:where(.nematic-game) .material-keyboard-hint { margin: 0; font-size: 0.6875rem; line-height: 1.65; color: color-mix(in oklch, var(--ink), transparent 22%); }
-:where(.nematic-game) .material-announcement { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-:where(.nematic-game) .material-discovery-toast { position: absolute; top: 0.25rem; left: 1.25rem; right: 1.25rem; width: fit-content; max-width: calc(100% - 2.5rem); margin: 0; padding: 0.65rem 0.85rem; border: 1px solid var(--nematic-rod-high); border-radius: 4px; background: var(--nematic-sample); color: var(--reading-surface); font: 0.75rem/1.5 Arial, Helvetica, sans-serif; pointer-events: none; animation: material-discovered 4s both; }
-@keyframes material-discovered { 0% { opacity: 0; transform: translateY(5px); } 10%, 80% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) { :where(.nematic-game) .material-discovery-toast { animation: none; } }
-:where(.nematic-game) .material-sample-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0.75rem 1.25rem 1.25rem; font-size: 0.6875rem; color: color-mix(in oklch, var(--surface), transparent 28%); }
-:where(.nematic-game) .material-sample-footer > span { display: inline-flex; align-items: center; gap: 0.5rem; }
-:where(.nematic-game) .material-sample-footer i { display: inline-block; width: 22px; height: 5px; border-radius: 4px; background: linear-gradient(90deg, var(--nematic-rod-low), var(--nematic-rod-high)); }
-:where(.nematic-game) .material-controls { grid-column: 1; grid-row: 3; min-width: 0; font-family: Arial, Helvetica, sans-serif; }
-:where(.nematic-game) .material-control-header { position: sticky; top: var(--material-sample-height); z-index: 2; display: grid; grid-template-columns: 1fr minmax(250px, 1fr); align-items: center; gap: 0.25rem 1rem; padding: 0.5rem 0 0.75rem; border-bottom: 1px solid var(--rule); background: var(--surface); }
-:where(.nematic-game) .material-control-header h2 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
-:where(.nematic-game) .material-start-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-:where(.nematic-game) .material-preset-help { grid-column: 1 / -1; margin: 0; font-size: 0.6875rem; line-height: 1.5; color: color-mix(in oklch, var(--ink), transparent 22%); }
-:where(.nematic-game) .material-detail-options { display: grid; gap: 0.25rem; margin-block: 0.5rem; }
-:where(.nematic-game) .material-detail-options label { display: flex; align-items: center; gap: 0.6rem; min-height: 44px; font-size: 0.8125rem; cursor: pointer; }
-:where(.nematic-game) .material-detail-options input { width: 18px; height: 18px; margin: 0; accent-color: var(--link-hover); }
-:where(.nematic-game) .material-detail-options input:focus-visible { outline: 2px solid var(--link-hover); outline-offset: 3px; }
-:where(.nematic-game) .material-mode-note { margin: 0 0 1rem; font-size: 0.6875rem; line-height: 1.6; color: var(--link-hover); }
-:where(.nematic-game) .material-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; margin: 0.75rem 0 0; }
-:where(.nematic-game) .material-stats div:last-child { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; }
-:where(.nematic-game) .material-stats dt { font-size: 0.625rem; opacity: 0.75; }
-:where(.nematic-game) .material-stats dd { margin: 0.25rem 0 0; font: 0.75rem "Courier New", Courier, monospace; }
-:where(.nematic-game) .material-stats dd span { font-size: 0.625rem; }
-:where(.nematic-game) .material-control-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 1.25rem; padding: 1rem 0 0; }
-:where(.nematic-game) .material-control-column { min-width: 0; }
-:where(.nematic-game) .material-control-footer { grid-column: 1; grid-row: 2; display: grid; grid-template-columns: 1fr 2fr auto; align-items: center; gap: 1rem; padding: 1rem 0; font-family: inherit; }
-:where(.nematic-game) .material-control-footer .material-reset { width: auto; margin: 0; padding-inline: 0.75rem; }
-:where(.nematic-game) .material-control-footer .material-stats { grid-column: 2; grid-row: 1; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; gap: 0.75rem; }
-:where(.nematic-game) .material-control-footer .material-reset { grid-column: 3; grid-row: 1; }
-:where(.nematic-game) .material-control-footer .material-stats div:last-child { grid-column: auto; display: block; }
-:where(.nematic-game) .material-control-footer .material-order { border: 0; margin: 0; padding: 0; }
-:where(.nematic-game) .material-field-group { min-width: 0; margin: 0 0 0.85rem; padding: 0; border: 0; }
-:where(.nematic-game) .material-field-group legend { padding: 0; margin-bottom: 0.5rem; font-size: 0.8125rem; font-weight: 600; }
-:where(.nematic-game) .material-field-group + .material-field-group { border-top: 1px solid var(--rule); padding-top: 0.75rem; }
-:where(.nematic-game) .material-field-group + .material-field-group legend { padding-right: 0.5rem; }
-:where(.nematic-game) .material-field-range { margin-top: 0.5rem; }
-:where(.nematic-game) .material-field-range .material-parameter-label label { font-size: 0.8125rem; font-weight: 400; }
-:where(.nematic-game) .material-field-note { margin: 0.35rem 0 0; font-size: 0.6875rem; line-height: 1.65; color: color-mix(in oklch, var(--ink), transparent 22%); }
-:where(.nematic-game) .material-plane-label { display: block; margin: 0.5rem 0; font-size: 0.8125rem; }
-:where(.nematic-game) .material-field-group select { display: block; width: 100%; min-height: 44px; padding: 0.5rem; border: 1px solid color-mix(in oklch, var(--ink), transparent 65%); border-radius: 4px; background: var(--reading-surface); color: var(--ink); font: 0.75rem Arial, Helvetica, sans-serif; }
-:where(.nematic-game) .material-field-group select:focus-visible { outline: 2px solid var(--link-hover); outline-offset: 2px; }
-:where(.nematic-game) .material-charge-switch { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 54px; margin-top: 0.25rem; cursor: pointer; font-size: 0.8125rem; }
-:where(.nematic-game) .material-charge-switch small { display: block; margin-top: 0.3rem; font-size: 0.6875rem; color: var(--link-hover); }
-:where(.nematic-game) .material-charge-switch input { appearance: none; position: relative; flex-shrink: 0; width: 40px; height: 24px; margin: 0; border: 1px solid color-mix(in oklch, var(--ink), transparent 65%); border-radius: 20px; background: var(--code-surface); cursor: pointer; }
-:where(.nematic-game) .material-charge-switch input::before { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transition: transform 150ms ease-out; }
-:where(.nematic-game) .material-charge-switch input:checked { border-color: var(--link-hover); background: var(--link-hover); }
-:where(.nematic-game) .material-charge-switch input:checked::before { background: var(--reading-surface); transform: translateX(16px); }
-:where(.nematic-game) .material-charge-switch input:focus-visible { outline: 2px solid var(--link-hover); outline-offset: 3px; }
-:where(.nematic-game) .material-ion-count { margin: 0.65rem 0 0; font: 0.6875rem/1.5 "Courier New", Courier, monospace; }
-:where(.nematic-game) .material-field-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-:where(.nematic-game) .material-field-actions button { min-height: 44px; padding: 0.5rem 0.25rem; border: 1px solid color-mix(in oklch, var(--ink), transparent 65%); border-radius: 4px; background: transparent; color: var(--ink); font: 0.6875rem Arial, Helvetica, sans-serif; cursor: pointer; }
-:where(.nematic-game) .material-field-actions button:hover { background: var(--code-surface); }
-:where(.nematic-game) .material-ion-key b { display: inline-grid; place-items: center; width: 13px; height: 13px; border-radius: 50%; font: 700 10px Arial, sans-serif; color: var(--ink); }
-:where(.nematic-game) .material-ion-key .ion-positive { background: var(--nematic-positive-ion); }
-:where(.nematic-game) .material-ion-key .ion-negative { background: var(--nematic-negative-ion); }
-:where(.nematic-game) .material-ion-key .ion-neutral { background: var(--nematic-neutral-ion); }
-:where(.nematic-game) .material-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 3px; border: 1px solid color-mix(in oklch, var(--ink), transparent 78%); border-radius: 6px; }
-:where(.nematic-game) .material-presets button { min-width: 0; min-height: 44px; padding: 0.5rem 0.25rem; border: 0; border-radius: 3px; background: transparent; color: var(--ink); font: 600 0.8125rem/1.2 Arial, Helvetica, sans-serif; cursor: pointer; }
-:where(.nematic-game) .material-presets button:hover { background: var(--code-surface); }
-:where(.nematic-game) .material-presets button[aria-pressed="true"] { background: var(--ink); color: var(--reading-surface); }
-:where(.nematic-game) .material-presets button:focus-visible { outline-offset: 2px; }
-:where(.nematic-game) .material-sliders { display: grid; gap: 1rem; }
-:where(.nematic-game) .material-parameter-label { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-:where(.nematic-game) .material-parameter-label label { font-size: 0.875rem; font-weight: 600; }
-:where(.nematic-game) .material-parameter-label output { font: 700 0.8125rem/1.4 "Courier New", Courier, monospace; font-variant-numeric: tabular-nums; }
-:where(.nematic-game) .material-parameter-label output span { margin-left: 2px; font-size: 0.6875rem; font-weight: 400; }
-:where(.nematic-game) .material-parameter > p { margin: 0.35rem 0 0; font-size: 0.75rem; line-height: 1.6; color: color-mix(in oklch, var(--ink), transparent 25%); }
-:where(.nematic-game) .material-parameter input[type="range"] { display: block; appearance: none; -webkit-appearance: none; width: 100%; height: 44px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; cursor: pointer; accent-color: var(--link-hover); }
-:where(.nematic-game) .material-parameter input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 3px; background: linear-gradient(to right, var(--link-hover) 0 var(--range-progress), var(--code-surface) var(--range-progress) 100%); }
-:where(.nematic-game) .material-parameter input[type="range"]::-moz-range-track { height: 4px; border-radius: 3px; background: var(--code-surface); }
-:where(.nematic-game) .material-parameter input[type="range"]::-moz-range-progress { height: 4px; background: var(--link-hover); }
-:where(.nematic-game) .material-parameter input[type="range"]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border: 2px solid var(--reading-surface); border-radius: 50%; background: var(--link-hover); box-shadow: 0 0 0 1px var(--link-hover); }
-:where(.nematic-game) .material-parameter input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border: 2px solid var(--reading-surface); border-radius: 50%; background: var(--link-hover); box-shadow: 0 0 0 1px var(--link-hover); }
-:where(.nematic-game) .material-parameter input:focus-visible { outline: 2px solid var(--link-hover); outline-offset: 2px; border-radius: 3px; }
-:where(.nematic-game) .material-range-ends { display: flex; justify-content: space-between; margin-top: -4px; font-size: 0.6875rem; color: color-mix(in oklch, var(--ink), transparent 28%); }
-:where(.nematic-game) .material-order { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid color-mix(in oklch, var(--ink), transparent 82%); }
-:where(.nematic-game) .material-order > div { display: flex; justify-content: space-between; gap: 0.75rem; font-size: 0.75rem; }
-:where(.nematic-game) .material-order output { font-family: "Courier New", Courier, monospace; font-variant-numeric: tabular-nums; }
-:where(.nematic-game) .material-order progress { display: block; appearance: none; width: 100%; height: 4px; margin-top: 0.6rem; border: 0; border-radius: 0; background: var(--code-surface); accent-color: var(--link-hover); }
-:where(.nematic-game) .material-order progress::-webkit-progress-bar { background: var(--code-surface); }
-:where(.nematic-game) .material-order progress::-webkit-progress-value { background: var(--link-hover); }
-:where(.nematic-game) .material-order progress::-moz-progress-bar { background: var(--link-hover); }
-:where(.nematic-game) .material-order p { margin: 0.5rem 0 0; font-size: 0.6875rem; line-height: 1.6; color: color-mix(in oklch, var(--ink), transparent 28%); }
-:where(.nematic-game) .material-reset { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; min-height: 44px; margin-top: 0.75rem; padding: 0.5rem; border: 1px solid color-mix(in oklch, var(--ink), transparent 80%); border-radius: 4px; background: transparent; color: var(--ink); font: 0.75rem Arial, Helvetica, sans-serif; cursor: pointer; }
-:where(.nematic-game) .material-reset:hover { background: var(--code-surface); }
-:where(.nematic-game) .material-reset svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-:where(.nematic-game) .material-model-note { max-width: none; margin: 0.85rem 0 0; font: 0.6875rem/1.7 Arial, Helvetica, sans-serif; color: color-mix(in oklch, var(--ink), transparent 28%); }
-:where(.nematic-game) .material-fallback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 1.5rem; background: var(--ink); color: var(--surface); font-size: 0.875rem; line-height: 1.6; }
-:where(.nematic-game) .material-lab button:disabled, :where(.nematic-game) .material-lab input:disabled { opacity: 0.45; cursor: default; }
-
-:where(.nematic-game) .material-discoveries { grid-column: 1; grid-row: 4; margin: 1rem 0 0; padding-top: 1rem; border-top: 1px solid var(--rule); }
-:where(.nematic-game) .material-discoveries ol { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
-:where(.nematic-game) .material-discoveries legend { width: auto; gap: 1rem; }
-:where(.nematic-game) .material-parameter input, :where(.nematic-game) .material-field-group select, :where(.nematic-game) .material-control-column button, :where(.nematic-game) .material-detail-options input { scroll-margin-top: calc(var(--material-sample-height) + 120px); }
-@container nematic (min-width: 901px) {
-  :where(.nematic-game) .material-sliders { gap: 0.35rem; }
-  :where(.nematic-game) .material-parameter-label label, :where(.nematic-game) .material-field-range .material-parameter-label label { font-size: 0.8125rem; }
-  :where(.nematic-game) .material-parameter input[type="range"] { height: 32px; }
-  :where(.nematic-game) .material-parameter > p, :where(.nematic-game) .material-range-ends { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  :where(.nematic-game) .material-field-range { margin-top: 0.35rem; }
-  :where(.nematic-game) .material-detail-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@container nematic (max-width: 900px) {
-  :where(.nematic-game) .material-control-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  :where(.nematic-game) .material-column-particles { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-  :where(.nematic-game) .material-column-particles > .material-field-group + .material-field-group { border: 0; padding: 0; }
-  :where(.nematic-game) .material-discoveries ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.nematic-game :is(button, input, select) { font-family: inherit; }
+.nematic-game :is(button, input, select):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.nematic-game button { cursor: pointer; }
+.nematic-game :is(button, input, select):disabled { opacity: 0.42; cursor: default; }
+.nematic-game .material-lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.3fr) minmax(0, 1fr); grid-template-areas: "left sample right" "left readouts right" "experiments experiments experiments"; align-items: start; gap: 16px 24px; }
+.nematic-game .material-sample { grid-area: sample; min-width: 0; position: relative; padding: 0 12px 12px; background: var(--nematic-sample, #303832); color: var(--reading-surface); --sample-ink: var(--reading-surface); }
+.nematic-game .material-sample-bar { display: flex; align-items: center; gap: 16px; min-height: 44px; }
+.nematic-game .material-control-header { flex: 1; min-width: 0; }
+.nematic-game .material-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid color-mix(in oklch, var(--sample-ink) 22%, transparent); }
+.nematic-game .material-presets button { min-width: 0; min-height: 44px; padding: 8px 6px; margin-bottom: -1px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: inherit; font-size: 13px; font-weight: 600; }
+.nematic-game .material-presets button[aria-pressed="true"] { border-bottom-color: currentColor; }
+.nematic-game .material-sample-actions { display: flex; align-items: center; gap: 4px; }
+.nematic-game .material-sample-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; padding: 8px; border: 0; background: transparent; color: inherit; font-size: 13px; }
+.nematic-game .material-sample-actions svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.nematic-game .material-sample :is(button, canvas):focus-visible { outline-color: var(--sample-ink); }
+.nematic-game .material-sample button:hover { background: color-mix(in oklch, var(--sample-ink) 6%, transparent); }
+.nematic-game .material-canvas { position: relative; width: 100%; aspect-ratio: 16 / 10; min-height: 280px; max-height: clamp(300px, calc(100svh - 332px), 480px); }
+.nematic-game .material-canvas canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.nematic-game .material-canvas canvas:active { cursor: grabbing; }
+.nematic-game .material-canvas canvas:focus-visible { outline-offset: -5px; }
+.nematic-game .material-playbar { display: flex; align-items: center; gap: 12px; padding-top: 8px; }
+.nematic-game .material-brushes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); flex: 1; gap: 4px; }
+.nematic-game .material-playbar button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; min-height: 44px; padding: 6px 8px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: inherit; font-size: 13px; }
+.nematic-game .material-playbar button[aria-pressed="true"] { border-bottom-color: currentColor; font-weight: 600; }
+.nematic-game .material-playbar svg { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.nematic-game .material-playbar kbd { opacity: 0.55; font: 10px/1 Arial, sans-serif; }
+.nematic-game .material-playbar .material-ripple { border: 1px solid color-mix(in oklch, var(--sample-ink) 24%, transparent); border-radius: 4px; padding-inline: 12px; }
+.nematic-game .material-brush-hint { min-height: 18px; margin: 6px 0 0; color: color-mix(in oklch, var(--sample-ink) 78%, transparent); font-size: 12px; line-height: 18px; }
+.nematic-game .material-sample-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; padding-top: 8px; color: color-mix(in oklch, var(--sample-ink) 80%, transparent); font-size: 11px; line-height: 18px; }
+.nematic-game .material-sample-footer > span, .nematic-game .material-sample-state { display: inline-flex; align-items: center; gap: 6px; }
+.nematic-game .material-sample-footer i { display: inline-block; width: 20px; height: 4px; background: linear-gradient(90deg, var(--nematic-rod-low) 50%, var(--nematic-rod-high) 50%); }
+.nematic-game .material-count { font-variant-numeric: tabular-nums; }
+.nematic-game .material-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--nematic-rod-high); }
+.nematic-game .material-live-dot[data-paused="true"] { background: var(--nematic-positive-ion); }
+.nematic-game .material-ion-key b { display: inline-grid; place-items: center; width: 13px; height: 13px; border-radius: 50%; color: var(--nematic-sample); font: 700 10px/1 Arial, sans-serif; }
+.nematic-game .ion-positive { background: var(--nematic-positive-ion); }
+.nematic-game .ion-negative { background: var(--nematic-negative-ion); }
+.nematic-game .ion-neutral { background: var(--nematic-neutral-ion); }
+.nematic-game .material-order { display: flex; align-items: center; gap: 7px; font-variant-numeric: tabular-nums; }
+.nematic-game .material-order progress { appearance: none; width: 60px; height: 3px; border: 0; background: color-mix(in oklch, var(--sample-ink) 20%, transparent); accent-color: var(--sample-ink); }
+.nematic-game .material-order progress::-webkit-progress-bar { background: color-mix(in oklch, var(--sample-ink) 20%, transparent); }
+.nematic-game .material-order progress::-webkit-progress-value { background: var(--sample-ink); }
+.nematic-game .material-order progress::-moz-progress-bar { background: var(--sample-ink); }
+.nematic-game .material-controls { display: contents; }
+.nematic-game .material-controls-left, .nematic-game .material-controls-right { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.nematic-game .material-controls-left { grid-area: left; }
+.nematic-game .material-controls-right { grid-area: right; }
+.nematic-game .material-controls-left > *, .nematic-game .material-controls-right > * { width: 100%; }
+.nematic-game .material-controls-left > :not(:first-child), .nematic-game .material-controls-right > :not(:first-child) { padding-top: 12px; border-top: 1px solid var(--rule); }
+.nematic-game .material-field-group { min-width: 0; margin: 0; padding: 0; border: 0; }
+.nematic-game .material-field-group legend { width: 100%; margin-bottom: 8px; padding: 0; font-size: 13px; line-height: 18px; font-weight: 600; }
+.nematic-game .material-sliders { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.nematic-game .material-environment-group { display: block; }
+.nematic-game .material-parameter { min-width: 0; display: grid; grid-template-columns: 104px minmax(0, 1fr) 36px; align-items: center; column-gap: 8px; }
+.nematic-game .material-parameter-label { display: contents; }
+.nematic-game .material-parameter-label label { grid-column: 1; grid-row: 1; }
+.nematic-game .material-parameter-label output { grid-column: 3; grid-row: 1; text-align: right; }
+.nematic-game .material-parameter input[type="range"] { grid-column: 2; grid-row: 1; }
+.nematic-game .material-parameter-label label { font-size: 13px; line-height: 18px; }
+.nematic-game .material-parameter-label output { flex-shrink: 0; color: color-mix(in oklch, var(--ink) 80%, transparent); font-size: 12px; line-height: 18px; font-variant-numeric: tabular-nums; }
+.nematic-game .material-parameter-label output span { margin-left: 2px; font-size: 10px; }
+.nematic-game .material-parameter input[type="range"] { appearance: none; -webkit-appearance: none; display: block; width: 100%; height: 24px; margin: 0; padding: 0; border: 0; background: transparent; accent-color: var(--accent); cursor: pointer; }
+.nematic-game .material-parameter input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(to right, var(--accent) 0 var(--range-progress), var(--track) var(--range-progress) 100%); }
+.nematic-game .material-parameter input[type="range"]::-moz-range-track { height: 2px; background: var(--track); }
+.nematic-game .material-parameter input[type="range"]::-moz-range-progress { height: 2px; background: var(--accent); }
+.nematic-game .material-parameter input[type="range"]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border: 0; border-radius: 50%; background: var(--accent); }
+.nematic-game .material-parameter input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: var(--accent); }
+.nematic-game .material-field-range + .material-field-range { margin-top: 2px; }
+.nematic-game .material-plane-control { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 8px; margin-block: 2px; }
+.nematic-game .material-plane-label { display: block; margin: 0; font-size: 13px; line-height: 18px; }
+.nematic-game .material-field-group select { width: 100%; min-width: 0; min-height: 28px; padding: 4px 6px; margin: 0; border: 1px solid var(--rule); border-radius: 4px; background: transparent; color: var(--ink); font-size: 13px; }
+.nematic-game .material-field-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.nematic-game .material-field-actions button { min-height: 30px; padding: 5px 7px; border: 1px solid var(--rule); border-radius: 4px; background: transparent; color: var(--ink); font-size: 11px; }
+.nematic-game .material-ions-group { display: block; }
+.nematic-game .material-ion-count { grid-column: 1 / -1; margin: 0 0 4px; font-size: 12px; line-height: 18px; }
+.nematic-game .material-charge-switch { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 8px; min-height: 28px; font-size: 13px; cursor: pointer; }
+.nematic-game .material-charge-switch input { appearance: none; position: relative; width: 32px; height: 18px; margin: 0; border: 1px solid var(--rule); border-radius: 12px; background: transparent; cursor: pointer; }
+.nematic-game .material-charge-switch input::before { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink); transition: transform 150ms ease-out; }
+.nematic-game .material-charge-switch input:checked { background: var(--accent); border-color: var(--accent); }
+.nematic-game .material-charge-switch input:checked::before { transform: translateX(14px); background: var(--surface); }
+.nematic-game .material-detail-options { display: grid; grid-template-columns: minmax(0, 1fr); }
+.nematic-game .material-detail-options label { display: flex; align-items: center; gap: 6px; min-height: 24px; font-size: 12px; line-height: 17px; cursor: pointer; }
+.nematic-game .material-detail-options input { flex-shrink: 0; width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+.nematic-game .material-readouts { grid-area: readouts; min-width: 0; }
+.nematic-game .material-readouts > h2 { margin: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; }
+.nematic-game .material-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 0; }
+.nematic-game .material-stats dt { color: color-mix(in oklch, var(--ink) 75%, transparent); font-size: 11px; line-height: 16px; }
+.nematic-game .material-stats dd { margin: 4px 0 0; font-size: 12px; line-height: 18px; font-variant-numeric: tabular-nums; }
+.nematic-game .material-readouts .material-order progress { background: var(--track); accent-color: var(--accent); }
+.nematic-game .material-readouts .material-order progress::-webkit-progress-bar { background: var(--track); }
+.nematic-game .material-readouts .material-order progress::-webkit-progress-value { background: var(--accent); }
+.nematic-game .material-readouts .material-order progress::-moz-progress-bar { background: var(--accent); }
+.nematic-game .material-experiments { grid-area: experiments; min-width: 0; }
+.nematic-game .material-experiments > h2 { margin: 12px 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; }
+.nematic-game .material-experiments > h2 span { margin-left: 8px; color: var(--accent); font-size: 12px; font-weight: 400; }
+.nematic-game .material-discoveries > p { margin: 0; color: color-mix(in oklch, var(--ink) 75%, transparent); font-size: 12px; line-height: 18px; }
+.nematic-game .material-discoveries ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 0; margin: 8px 0 0; list-style: none; }
+.nematic-game .material-discoveries li { display: flex; align-items: flex-start; gap: 10px; }
+.nematic-game .material-discovery-mark { display: grid; place-items: center; flex: 0 0 22px; height: 22px; border: 1px solid var(--rule); border-radius: 50%; font-size: 10px; }
+.nematic-game .material-discovery-mark svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.nematic-game .material-discoveries li[data-complete="true"] .material-discovery-mark { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.nematic-game .material-discoveries strong { display: block; font-size: 13px; line-height: 18px; font-weight: 600; }
+.nematic-game .material-discoveries li p { margin: 2px 0 0; font-size: 12px; line-height: 17px; }
+.nematic-game .material-model-note { max-width: 100ch; margin: 24px 0 0; color: color-mix(in oklch, var(--ink) 70%, transparent); font-size: 12px; line-height: 1.7; }
+.nematic-game .material-fallback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; background: var(--nematic-sample); color: var(--reading-surface); font-size: 14px; }
+.nematic-game .material-discovery-toast { position: absolute; top: 8px; left: 12px; right: 12px; width: fit-content; max-width: calc(100% - 24px); margin: 0; padding: 8px 12px; border: 1px solid var(--sample-ink); border-radius: 4px; background: var(--nematic-sample); color: var(--sample-ink); font-size: 12px; line-height: 18px; pointer-events: none; animation: material-discovered 4s both; }
+.nematic-game .material-announcement, .nematic-game .material-preset-help, .nematic-game .material-start-label, .nematic-game .material-controls > h2,
+.nematic-game .material-parameter > p, .nematic-game .material-range-ends, .nematic-game .material-display-note,
+.nematic-game .material-field-note, .nematic-game .material-charge-switch small, .nematic-game .material-sample-state h2,
+.nematic-game .material-keyboard-hint { position: absolute; width: 1px; height: 1px; min-height: 0; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.nematic-game[data-transparent-canvas="true"] .material-sample { padding: 0; background: transparent; color: var(--ink); --sample-ink: var(--ink); }
+.nematic-game[data-transparent-canvas="true"] .material-presets button[aria-pressed="true"],
+.nematic-game[data-transparent-canvas="true"] .material-playbar button[aria-pressed="true"] { color: var(--accent); }
+.nematic-game[data-transparent-canvas="true"] .material-ion-key b { color: var(--surface); }
+.nematic-game[data-transparent-canvas="true"] .material-discovery-toast,
+.nematic-game[data-transparent-canvas="true"] .material-fallback { background: var(--surface); color: var(--ink); }
+@keyframes material-discovered { 0% { opacity: 0; transform: translateY(3px); } 10%, 80% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; } }
+@container nematic (max-width: 1050px) {
+  .nematic-game .material-lab { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "sample sample" "left right" "readouts readouts" "experiments experiments"; gap: 24px; }
+  .nematic-game .material-sample { width: 100%; max-width: 760px; margin-inline: auto; }
+  .nematic-game .material-canvas { max-height: 440px; }
+  .nematic-game .material-readouts, .nematic-game .material-experiments { width: 100%; max-width: 760px; margin-inline: auto; }
 }
 @container nematic (max-width: 600px) {
-  :where(.nematic-game) .material-lab { --material-sample-height: clamp(300px, 44svh, 380px); }
-  :where(.nematic-game) .material-control-panel, :where(.nematic-game) .material-column-particles { display: block; }
-  :where(.nematic-game) .material-control-column + .material-control-column { padding-top: 1rem; border-top: 1px solid var(--rule); }
-  :where(.nematic-game) .material-field-group { margin-bottom: 1.5rem; }
-  :where(.nematic-game) .material-control-header { grid-template-columns: 1fr; }
-  :where(.nematic-game) .material-control-header h2 { display: none; }
-  :where(.nematic-game) .material-control-footer { grid-template-columns: 1fr; }
-  :where(.nematic-game) .material-control-footer .material-stats { grid-column: 1; grid-row: 2; }
-  :where(.nematic-game) .material-control-footer .material-reset { grid-column: 1; grid-row: 3; width: 100%; }
-  :where(.nematic-game) .material-discoveries ol { grid-template-columns: 1fr; }
-  :where(.nematic-game) .material-playbar { gap: 0.4rem; padding: 0.4rem 0.85rem 0; }
-  :where(.nematic-game) .material-playbar button { gap: 0.3rem; padding: 0.4rem; font-size: 0.6875rem; }
-  :where(.nematic-game) .material-playbar kbd { display: none; }
-  :where(.nematic-game) .material-playbar svg { width: 15px; height: 15px; }
-  :where(.nematic-game) .material-playbar .material-ripple { max-width: 64px; font-size: 0.625rem; }
-  :where(.nematic-game) .material-brush-hint { margin: 0.5rem 0.85rem 0; font-size: 0.6875rem; }
-  :where(.nematic-game) .material-sample-bar { padding: 0.4rem 0.85rem 0; }
-  :where(.nematic-game) .material-sample-footer { padding: 0.5rem 0.85rem 0.85rem; font-size: 0.5625rem; }
-  :where(.nematic-game) .material-column-particles > .material-field-group + .material-field-group { border-top: 1px solid var(--rule); padding-top: 1rem; }
+  .nematic-game .material-lab { grid-template-columns: minmax(0, 1fr); grid-template-areas: "sample" "left" "right" "readouts" "experiments"; }
+  .nematic-game .material-sample-bar { gap: 8px; }
+  .nematic-game .material-sample-actions button { padding-inline: 6px; }
+  .nematic-game .material-canvas { aspect-ratio: 4 / 3; min-height: 220px; max-height: 360px; }
+  .nematic-game .material-playbar { gap: 8px; }
+  .nematic-game .material-playbar button { gap: 4px; padding-inline: 2px; font-size: 12px; }
+  .nematic-game .material-playbar svg { width: 13px; height: 13px; }
+  .nematic-game .material-playbar kbd { display: none; }
+  .nematic-game .material-playbar .material-ripple { padding-inline: 8px; }
+  .nematic-game .material-sample-footer { gap: 6px 14px; }
+  .nematic-game .material-sample-footer > span:not(.material-ion-key) { display: none; }
+  .nematic-game .material-controls-left, .nematic-game .material-controls-right, .nematic-game .material-ions-group { gap: 16px; }
+  .nematic-game .material-experiments ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nematic-game .material-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nematic-game .material-field-group select { font-size: 16px; }
 }
-@container nematic (max-width: 340px) { :where(.nematic-game) .material-brushes svg { display: none; } }
-@media (max-height: 600px) {
-  :where(.nematic-game) .material-lab { --material-sample-height: 235px; }
-  :where(.nematic-game) .material-brush-hint, :where(.nematic-game) .material-preset-help { display: none; }
-  :where(.nematic-game) .material-control-header { display: block; padding-block: 0.35rem; }
-  :where(.nematic-game) .material-control-header h2 { display: none; }
+@container nematic (max-width: 320px) {
+  .nematic-game .material-presets button { padding-inline: 2px; }
+  .nematic-game .material-brushes svg { display: none; }
+  .nematic-game .material-controls-left, .nematic-game .material-controls-right { grid-template-columns: minmax(0, 1fr); }
 }
-@media (pointer: coarse) { :where(.nematic-game) .material-parameter input[type="range"], :where(.nematic-game) .material-field-group select { min-height: 44px; } }
+@media (pointer: coarse) {
+  .nematic-game .material-parameter input[type="range"], .nematic-game .material-detail-options label,
+  .nematic-game .material-field-actions button, .nematic-game .material-field-group select, .nematic-game .material-charge-switch { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nematic-game .material-discovery-toast { animation: none; }
+  .nematic-game .material-charge-switch input::before { transition: none; }
+}
 @media (forced-colors: active) {
-  :where(.nematic-game) .material-parameter input[type="range"] { appearance: auto; }
-  :where(.nematic-game) .material-presets button[aria-pressed="true"] { outline: 2px solid Highlight; }
+  .nematic-game .material-parameter input[type="range"] { appearance: auto; }
+  .nematic-game .material-presets button[aria-pressed="true"], .nematic-game .material-playbar button[aria-pressed="true"] { outline: 2px solid Highlight; }
 }
-@media print { :where(.nematic-game) .material-lab { display: none; } }
+@media print { .nematic-game .material-lab { display: none; } }

@@ -1,8 +1,10 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: #DFE5DC; color: #303832; font: 16px/1.5 Arial, Helvetica, sans-serif; }
-main { max-width: 1600px; margin: auto; padding: 24px clamp(16px, 4vw, 64px); }
+main { width: min(calc(100% - 48px), 1280px); margin: auto; padding: 24px 0; }
 header { padding-bottom: 20px; }
-h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 40px); }
+h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }
 p { margin: 8px 0; }
 a { color: #785448; text-underline-offset: 4px; }
 footer { padding-block: 24px; }
+
+@media (max-width: 600px) { main { width: calc(100% - 32px); padding-top: 16px; } }

@@ -45,5 +45,6 @@ test("two server-rendered instances have unique control IDs and complete labels"
     for (const id of match[1].split(" ")) assert(ids.includes(id), `Missing control target: ${id}`);
   }
   assert(html.includes("--nematic-sample:#172D42"));
-  assert(html.includes("Sample controls"));
+  assert(html.includes(">Controls</h2>"));
+  assert.equal((html.match(/<details\b/g) ?? []).length, 0);
 });

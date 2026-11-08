@@ -10,6 +10,7 @@ import { createConfiguredNematicGame, resolveOptions, type NematicOptions } from
 import { resolveTheme, type NematicTheme } from "../core/theme.js";
 export type NematicLabProps = NematicOptions & {
   theme?: Partial<NematicTheme>;
+  transparentCanvas?: boolean;
   className?: string;
   style?: CSSProperties;
   onMetrics?: (metrics: ReturnType<typeof materialMetrics>) => void;
@@ -25,28 +26,29 @@ function EnvironmentRange({ name, label, hint, value, min = 0, max = 100, degree
   name: EnvironmentSlider; label: string; hint?: string; value: number; min?: number; max?: number; degrees?: boolean; disabled: boolean; onChange: (value: number) => void;
 }) {
   const id = useId(), shown = Math.round(degrees ? value : value * 100);
+  const shortLabel: Record<EnvironmentSlider, string> = { electric: "Strength", electricAngle: "Direction", electricResponse: "Rod response", magnetic: "Strength", magneticAngle: "Direction", magneticResponse: "Rod response", ions: "Amount", chargeStrength: "Charge", ionMobility: "Mobility", screening: "Screening" };
   return <div className="material-parameter material-field-range">
-    <div className="material-parameter-label"><label htmlFor={id}>{label}</label><output htmlFor={id}>{shown}<span>{degrees ? "°" : "%"}</span></output></div>
+    <div className="material-parameter-label"><label htmlFor={id}>{shortLabel[name]}</label><output htmlFor={id}>{shown}<span>{degrees ? "°" : "%"}</span></output></div>
     {hint && <p id={`${id}-hint`}>{hint}</p>}
     <input id={id} type="range" min={min} max={max} step={1} value={shown} disabled={disabled}
-      title={hint} aria-describedby={hint ? `${id}-hint` : undefined} aria-valuetext={degrees ? `${shown} degrees` : `${shown} percent, relative scale`}
+      aria-label={label} title={hint} aria-describedby={hint ? `${id}-hint` : undefined} aria-valuetext={degrees ? `${shown} degrees` : `${shown} percent, relative scale`}
       style={{ "--range-progress": `${(shown - min) / (max - min) * 100}%` } as CSSProperties}
       onChange={event => onChange(Number(event.target.value) / (degrees ? 1 : 100))} />
   </div>;
 }
 
 function MaterialRange({ parameter, params, disabled, modeDisabled, onChange }: {
-  parameter: { id: string; label: string; description: string; low: string; high: string; modeHint?: string };
+  parameter: { id: string; label: string; shortLabel?: string; description: string; low: string; high: string; modeHint?: string };
   params: MaterialParameters; disabled: boolean; modeDisabled?: boolean;
   onChange: (key: keyof MaterialParameters, value: number) => void;
 }) {
   const id = useId();
   const key = parameter.id as keyof MaterialParameters, percent = Math.round(params[key] * 100);
   return <div className="material-parameter">
-    <div className="material-parameter-label"><label htmlFor={id}>{parameter.label}</label><output htmlFor={id}>{percent}<span>%</span></output></div>
+    <div className="material-parameter-label"><label htmlFor={id}>{parameter.shortLabel ?? parameter.label}</label><output htmlFor={id}>{percent}<span>%</span></output></div>
     <p id={`${id}-hint`}>{modeDisabled ? parameter.modeHint : parameter.description}</p>
     <input id={id} type="range" min={0} max={100} step={1} value={percent} disabled={disabled || modeDisabled}
-      title={`${modeDisabled ? parameter.modeHint : parameter.description} ${parameter.low} to ${parameter.high}.`} aria-describedby={`${id}-hint`} aria-valuetext={`${percent} percent, relative scale`}
+      aria-label={parameter.label} title={`${modeDisabled ? parameter.modeHint : parameter.description} ${parameter.low} to ${parameter.high}.`} aria-describedby={`${id}-hint`} aria-valuetext={`${percent} percent, relative scale`}
       style={{ "--range-progress": `${percent}%` } as CSSProperties}
       onChange={event => onChange(key, Number(event.target.value) / 100)} />
     <div className="material-range-ends" aria-hidden="true"><span>{parameter.low}</span><span>{parameter.high}</span></div>
@@ -58,6 +60,7 @@ export function NematicLab(props: NematicLabProps = {}) {
   const [defaults] = useState(() => resolveOptions(props));
   const theme = useMemo(() => resolveTheme(props.theme), [props.theme]);
   const themeRef = useRef(theme); themeRef.current = theme;
+  const transparentCanvas = useRef(props.transparentCanvas ?? false); transparentCanvas.current = props.transparentCanvas ?? false;
   const metricsCallback = useRef(props.onMetrics); metricsCallback.current = props.onMetrics;
   const discoveryKey = defaults.storageKey;
   const themeStyle = Object.fromEntries(Object.entries(theme).map(([key, value]) => [`--nematic-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`, value])) as CSSProperties;
@@ -103,7 +106,7 @@ export function NematicLab(props: NematicLabProps = {}) {
         try { if (discoveryKey) localStorage.setItem(discoveryKey, JSON.stringify(savedDiscoveries.current)); } catch { /* Optional persistence. */ }
       }
     }
-    function draw() { renderNematicGame(ctx!, state, motion.matches, displayRef.current, themeRef.current); }
+    function draw() { renderNematicGame(ctx!, state, motion.matches, displayRef.current, themeRef.current, transparentCanvas.current); }
     function stop() { cancelAnimationFrame(frame); cancelAnimationFrame(idleFrame); frame = 0; idleFrame = 0; last = 0; surface.dataset.running = "false"; }
     function invalidate() {
       if (!state.paused && visible && !document.hidden) { run(); return; }
@@ -176,7 +179,7 @@ export function NematicLab(props: NematicLabProps = {}) {
       window.removeEventListener("blur", release); motion.removeEventListener("change", motionChange); world.current = null; held.current = null; };
   }, []);
 
-  useEffect(() => { actions.current.draw(); }, [theme]);
+  useEffect(() => { actions.current.draw(); }, [theme, props.transparentCanvas]);
 
   function selectTool(next: MaterialTool) {
     setTool(next); toolRef.current = next;
@@ -206,19 +209,31 @@ export function NematicLab(props: NematicLabProps = {}) {
   }
   const phase = copy.presets.find(p => p.id === metrics.phase)!;
 
-  return <div className={["nematic-game", props.className].filter(Boolean).join(" ")} style={{ ...themeStyle, ...props.style }}>
+  return <div className={["nematic-game", props.className].filter(Boolean).join(" ")} data-transparent-canvas={props.transparentCanvas ?? false} style={{ ...themeStyle, ...props.style }}>
     <div className="material-lab">
       <section className="material-sample" aria-label="Live material sample">
         <div className="material-sample-bar">
-          <div className="material-sample-state"><span className="material-live-dot" data-paused={paused} aria-hidden="true" /><h2><span className="material-state-prefix">{copy.currentState} </span>{metrics.settling ? copy.settling : phase.label}</h2>
-            {ready && <span className="material-count">{metrics.count} rods · {metrics.ionCount} {environment.charged ? "ions" : "tracers"}</span>}</div>
+        <div className="material-control-header">
+        <div className="material-start-label"><span>{copy.startingState}</span></div>
+        <div className="material-presets" aria-label={copy.startingState}>
+          {copy.presets.map(preset => <button type="button" key={preset.id} disabled={!ready}
+            aria-pressed={selectedMode === preset.id} title={`${copy.modeHints[preset.id as MaterialPhase]} ${copy.changeStructure}`}
+            onClick={() => { setSelectedMode(preset.id as MaterialPhase); actions.current.mode(preset.id as MaterialPhase); }}>{preset.label}</button>)}
+        </div>
+        <p className="material-preset-help">{copy.presetHint}</p>
+        </div>
+          <div className="material-sample-actions">
           <button className="material-pause" type="button" disabled={!ready} onClick={() => actions.current.toggle()}
             aria-label={paused ? copy.resume : copy.pause} title={paused ? copy.resume : copy.pause}>
             <svg viewBox="0 0 24 24" aria-hidden="true">{paused ? <path d="m9 5 10 7-10 7Z" /> : <><path d="M8 5v14" /><path d="M16 5v14" /></>}</svg>
           </button>
+        <button type="button" className="material-reset" aria-label={copy.reset} title={copy.reset} disabled={!ready} onClick={() => actions.current.reset()}>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 8a6.5 6.5 0 1 1 .7 6M3.5 3v5h5" /></svg>{copy.resetShort}
+        </button>
+          </div>
         </div>
         <div className="material-canvas">
-          <canvas ref={canvas} tabIndex={0} role="application" aria-label={copy.accessibleLabel} data-structure={selectedMode}
+          <canvas ref={canvas} tabIndex={0} role="application" aria-label={copy.accessibleLabel} data-structure={selectedMode} data-frame-limit={frameLimit}
             onPointerDown={event => {
               if (event.button !== 0 || held.current !== null || !world.current) return;
               event.preventDefault(); event.currentTarget.focus({ preventScroll: true }); held.current = event.pointerId;
@@ -266,53 +281,42 @@ export function NematicLab(props: NematicLabProps = {}) {
             aria-pressed={tool === id} title={`${copy.tools[id].hint} (${index + 1})`} onClick={() => selectTool(id)}>
             <ToolIcon tool={id} /><span>{copy.tools[id].label}</span><kbd aria-hidden="true">{index + 1}</kbd>
           </button>)}</div>
-          <button className="material-ripple" type="button" disabled={!ready || paused} onClick={() => actions.current.ripple()}>{copy.tools.ripple}</button>
+          <button className="material-ripple" type="button" aria-label={copy.tools.ripple} title={copy.tools.ripple} disabled={!ready || paused} onClick={() => actions.current.ripple()}>{copy.tools.rippleShort}</button>
         </div>
         <p className="material-brush-hint">{paused ? "Motion is paused. Resume to use a brush." : copy.tools[tool].hint}</p>
-        <div className="material-sample-footer"><span><i aria-hidden="true" />{copy.legend}</span>
+        <div className="material-sample-footer">
+          <div className="material-sample-state"><span className="material-live-dot" data-paused={paused} aria-hidden="true" /><h2><span className="material-state-prefix">{copy.currentState} </span>{metrics.settling ? copy.settling : phase.label}</h2>
+            {ready && <span className="material-count">{metrics.count} rods · {metrics.ionCount} {environment.charged ? "ions" : "tracers"}</span>}</div>
+          <span><i aria-hidden="true" />{copy.legend}</span>
           {metrics.ionCount > 0 && <span className="material-ion-key">{environment.charged ? <><b className="ion-positive">+</b><b className="ion-negative">-</b>{copy.fields.ionKey}</> : <><b className="ion-neutral">0</b>{copy.fields.neutralKey}</>}</span>}
-          <span title="The frame limit adapts to rendering cost. Simulation sleeps off screen.">{ready ? `${frameLimit} fps limit · auto` : copy.dragHint}</span></div>
+        </div>
       </section>
-        <div className="material-control-footer">
-        <div className="material-order"><div><label htmlFor={`${instanceId}-order`}>{copy.orderLabel}</label><output>{Math.round(metrics.order * 100)}%</output></div>
-          <progress id={`${instanceId}-order`} max={1} value={metrics.order} /><p>{copy.orderHint}</p></div>
-        <dl className="material-stats">
-          <div><dt>{copy.motionLabel}</dt><dd>{metrics.motion.toFixed(1)} <span>px/s</span></dd></div>
-          <div><dt>{copy.latticeLabel}</dt><dd>{selectedMode === "solid" ? `${metrics.latticeError.toFixed(1)} px` : "Free"}</dd></div>
-          <div><dt>{copy.directorLabel}</dt><dd>{metrics.order > 0.15 ? `${Math.round(metrics.director)}°` : "Unordered"}</dd></div>
-        </dl>
-        <button type="button" className="material-reset" disabled={!ready} onClick={() => actions.current.reset()}>
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 8a6.5 6.5 0 1 1 .7 6M3.5 3v5h5" /></svg>{copy.reset}
-        </button>
-        </div>
       <aside className="material-controls" aria-labelledby={`${instanceId}-controls-title`}>
-        <div className="material-control-header"><h2 id={`${instanceId}-controls-title`}>{copy.controlsTitle}</h2>
-        <div className="material-start-label"><span>{copy.startingState}</span></div>
-        <div className="material-presets" aria-label={copy.startingState}>
-          {copy.presets.map(preset => <button type="button" key={preset.id} disabled={!ready}
-            aria-pressed={selectedMode === preset.id} title={copy.changeStructure}
-            onClick={() => { setSelectedMode(preset.id as MaterialPhase); actions.current.mode(preset.id as MaterialPhase); }}>{preset.label}</button>)}
-        </div>
-        <p className="material-preset-help">{copy.presetHint}</p>
-        </div>
-        <div className="material-control-panel" id={`${instanceId}-all-controls`} aria-label="Material, fields and particle controls">
-        <div className="material-control-column material-column-material">
+        <h2 id={`${instanceId}-controls-title`}>{copy.groups.title}</h2>
+        <div className="material-controls-left">
         <fieldset className="material-field-group material-base-group"><legend>{copy.materialTitle}</legend>
-        <p className="material-mode-note">{copy.modeHints[selectedMode]}</p>
         <div className="material-sliders">
           {copy.parameters.map(parameter => <MaterialRange key={parameter.id} parameter={parameter} params={params} disabled={!ready}
             modeDisabled={parameter.id === "alignment" && selectedMode === "liquid"} onChange={(key, value) => update({ ...params, [key]: value })} />)}
         </div>
         </fieldset>
-        <fieldset className="material-field-group"><legend>{copy.shapeTitle}</legend>
+        <fieldset className="material-field-group material-shape-group"><legend>{copy.shapeTitle}</legend>
           <div className="material-sliders">
             {copy.extraParameters.map(parameter => <MaterialRange key={parameter.id} parameter={parameter} params={params} disabled={!ready}
               modeDisabled={parameter.id === "stiffness" && selectedMode !== "solid"} onChange={(key, value) => update({ ...params, [key]: value })} />)}
           </div>
         </fieldset>
+        <fieldset className="material-field-group material-display-group"><legend>{copy.display.title}</legend>
+          <div className="material-detail-options">
+            {(["mesh", "directors", "trails", "detail", "wakes", "polarized"] as const).map(key => <label key={key}>
+              <input type="checkbox" id={`${instanceId}-display-${key}`} checked={display[key]} disabled={!ready} title={key === "polarized" ? copy.display.polarizedHint : undefined} aria-describedby={key === "polarized" ? `${instanceId}-polarized-hint` : undefined} onChange={event => updateDisplay({ ...display, [key]: event.target.checked })} />{copy.display[key]}
+            </label>)}
+          </div>
+          <p className="material-display-note" id={`${instanceId}-polarized-hint`}>{copy.display.polarizedHint}</p>
+        </fieldset>
         </div>
-        <div className="material-control-column material-column-fields">
-          <fieldset className="material-field-group"><legend>{copy.fields.electricTitle}</legend>
+        <div className="material-controls-right">
+          <fieldset className="material-field-group material-environment-group"><legend>{copy.fields.electricTitle}</legend>
             <EnvironmentRange name="electric" label={copy.fields.electricStrength} value={environment.electric} disabled={!ready}
               onChange={value => updateEnvironment({ ...environment, electric: value })} />
             <EnvironmentRange name="electricAngle" label={copy.fields.electricAngle} value={environment.electricAngle} max={360} degrees disabled={!ready}
@@ -320,31 +324,31 @@ export function NematicLab(props: NematicLabProps = {}) {
             <EnvironmentRange name="electricResponse" label={copy.fields.electricResponse} hint={copy.fields.responseHint} value={environment.electricResponse} min={-100} disabled={!ready}
               onChange={value => updateEnvironment({ ...environment, electricResponse: value })} />
             <p className="material-field-note">{copy.fields.electricHint}</p>
+          <div className="material-field-actions">
+            <button type="button" disabled={!ready} onClick={() => updateEnvironment({ ...environment, electric: 0.7, electricAngle: 0, magnetic: 0.55, magneticPlane: "out", ions: 0.5, charged: true })}>{copy.fields.demoLabel}</button>
+            <button type="button" disabled={!ready} onClick={() => updateEnvironment({ ...environment, electric: 0, magnetic: 0 })}>{copy.fields.clearLabel}</button>
+          </div>
           </fieldset>
-          <fieldset className="material-field-group"><legend>{copy.fields.magneticTitle}</legend>
+          <fieldset className="material-field-group material-environment-group"><legend>{copy.fields.magneticTitle}</legend>
             <EnvironmentRange name="magnetic" label={copy.fields.magneticStrength} value={environment.magnetic} disabled={!ready}
               onChange={value => updateEnvironment({ ...environment, magnetic: value })} />
-            <label className="material-plane-label" htmlFor={`${instanceId}-magnetic-plane`}>{copy.fields.planeLabel}</label>
-            <select id={`${instanceId}-magnetic-plane`} value={environment.magneticPlane} disabled={!ready}
+            <div className="material-plane-control">
+            <label className="material-plane-label" htmlFor={`${instanceId}-magnetic-plane`}>Plane</label>
+            <select id={`${instanceId}-magnetic-plane`} aria-label={copy.fields.planeLabel} value={environment.magneticPlane} disabled={!ready}
               onChange={event => updateEnvironment({ ...environment, magneticPlane: event.target.value as MagneticPlane })}>
               {copy.fields.planes.map(plane => <option value={plane.value} key={plane.value}>{plane.label}</option>)}
             </select>
+            </div>
             <EnvironmentRange name="magneticAngle" label={copy.fields.magneticAngle} value={environment.magneticAngle} max={180} degrees
               disabled={!ready || environment.magneticPlane !== "in-plane"} onChange={value => updateEnvironment({ ...environment, magneticAngle: value })} />
             <EnvironmentRange name="magneticResponse" label={copy.fields.magneticResponse} hint={copy.fields.responseHint} value={environment.magneticResponse} min={-100}
               disabled={!ready || environment.magneticPlane !== "in-plane"} onChange={value => updateEnvironment({ ...environment, magneticResponse: value })} />
             <p className="material-field-note">{environment.magneticPlane === "in-plane" ? copy.fields.inPlaneHint : copy.fields.throughPlaneHint}</p>
           </fieldset>
-          <div className="material-field-actions">
-            <button type="button" disabled={!ready} onClick={() => updateEnvironment({ ...environment, electric: 0.7, electricAngle: 0, magnetic: 0.55, magneticPlane: "out", ions: 0.5, charged: true })}>{copy.fields.demoLabel}</button>
-            <button type="button" disabled={!ready} onClick={() => updateEnvironment({ ...environment, electric: 0, magnetic: 0 })}>{copy.fields.clearLabel}</button>
-          </div>
-        </div>
-        <div className="material-control-column material-column-particles">
-          <fieldset className="material-field-group"><legend>{copy.fields.ionsTitle}</legend>
+          <fieldset className="material-field-group material-ions-group"><legend>{copy.groups.particles}</legend>
             <EnvironmentRange name="ions" label={copy.fields.amountLabel} value={environment.ions} disabled={!ready}
               onChange={value => updateEnvironment({ ...environment, ions: value })} />
-            <label className="material-charge-switch"><span>{copy.fields.chargeLabel}<small>{environment.charged ? copy.fields.chargedLabel : copy.fields.neutralLabel}</small></span>
+            <label className="material-charge-switch"><span>Charged<small>{environment.charged ? copy.fields.chargedLabel : copy.fields.neutralLabel}</small></span>
               <input type="checkbox" role="switch" checked={environment.charged} disabled={!ready} aria-label={copy.fields.chargeLabel}
                 onChange={event => updateEnvironment({ ...environment, charged: event.target.checked })} />
             </label>
@@ -357,25 +361,28 @@ export function NematicLab(props: NematicLabProps = {}) {
             <EnvironmentRange name="screening" label={copy.fields.screening} value={environment.screening} disabled={!ready || !environment.charged}
               hint={copy.fields.screeningHint} onChange={value => updateEnvironment({ ...environment, screening: value })} />
           </fieldset>
-        <fieldset className="material-field-group"><legend>{copy.display.title}</legend>
-          <div className="material-detail-options">
-            {(["mesh", "directors", "trails", "detail", "wakes", "polarized"] as const).map(key => <label key={key}>
-              <input type="checkbox" id={`${instanceId}-display-${key}`} checked={display[key]} disabled={!ready} onChange={event => updateDisplay({ ...display, [key]: event.target.checked })} />{copy.display[key]}
-            </label>)}
-          </div>
-          {display.polarized && <p className="material-field-note">{copy.display.polarizedHint}</p>}
-        </fieldset>
-        </div>
         </div>
       </aside>
-        <fieldset className="material-field-group material-discoveries"><legend>{copy.discoveries.title} <span>{discoveries.length}/{copy.discoveries.items.length}</span></legend>
+      <section className="material-readouts" aria-labelledby={`${instanceId}-readouts-title`}>
+        <h2 id={`${instanceId}-readouts-title`}>{copy.groups.readouts}</h2>
+        <dl className="material-stats">
+          <div><dt>{copy.orderLabel}</dt><dd className="material-order"><progress id={`${instanceId}-order`} aria-label={copy.orderLabel} max={1} value={metrics.order} /><output>{Math.round(metrics.order * 100)}%</output></dd></div>
+          <div><dt>{copy.motionLabel}</dt><dd>{metrics.motion.toFixed(1)} <span>px/s</span></dd></div>
+          <div><dt>{copy.latticeLabel}</dt><dd>{selectedMode === "solid" ? `${metrics.latticeError.toFixed(1)} px` : "Free"}</dd></div>
+          <div><dt>{copy.directorLabel}</dt><dd>{metrics.order > 0.15 ? `${Math.round(metrics.director)}°` : "Unordered"}</dd></div>
+        </dl>
+      </section>
+      <section className="material-experiments">
+        <h2>{copy.discoveries.title} <span>{discoveries.length}/{copy.discoveries.items.length}</span></h2>
+        <div className="material-discoveries">
           <p className="material-field-note">{discoveryKey ? copy.discoveries.saved : "Discoveries last until you reload this page."}</p>
           <ol>{copy.discoveries.items.map((item, index) => <li key={item.id} data-complete={discoveries.includes(item.id as Discovery)}>
             <span className="material-discovery-mark" aria-label={discoveries.includes(item.id as Discovery) ? "Discovered" : "To discover"}>{discoveries.includes(item.id as Discovery) ? <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8" /></svg> : String(index + 1).padStart(2, "0")}</span>
             <div><strong>{item.title}</strong><p>{item.hint}</p></div>
           </li>)}</ol>
           <p className="material-keyboard-hint">{copy.tools.keyboard}</p>
-        </fieldset>
+        </div>
+      </section>
     </div>
     <p className="material-announcement" role="status" aria-live="polite">{announcement}</p>
     <p className="material-model-note">{copy.modelNote}</p>
