@@ -19,6 +19,7 @@ You can also host these files on another static host.
 
 ## Other static hosts
 
+Use Node.js 22.12 or later.
 Install the dependencies.
 
 ```sh

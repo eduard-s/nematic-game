@@ -1,7 +1,7 @@
 {
-  "name": "@eduard-s/nematic-game",
-  "version": "0.2.0",
-  "description": "A React material lab with liquid, nematic and solid structures.",
+  "name": "nematic-game",
+  "version": "0.3.0",
+  "description": "An interactive material lab with liquid, nematic, and solid structures, a TypeScript physics engine, and a React component.",
   "type": "module",
   "license": "MIT",
   "author": "Eduard Smirnov",
@@ -9,7 +9,14 @@
     "type": "git",
     "url": "git+https://github.com/eduard-s/nematic-game.git"
   },
-  "homepage": "https://github.com/eduard-s/nematic-game#readme",
+  "homepage": "https://esmirnov.ai/nematic-game/",
+  "bugs": {
+    "url": "https://github.com/eduard-s/nematic-game/issues"
+  },
+  "keywords": ["nematic", "liquid-crystals", "physics", "simulation", "react", "typescript", "education"],
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": [
     "**/*.css"
   ],
@@ -24,12 +31,14 @@
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "docs"
   ],
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 4174",
@@ -37,11 +46,17 @@
     "build:demo": "vite build",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && node --test tests/*.test.mjs",
+    "test:package": "npm run build && node scripts/smoke-package.mjs",
+    "prepack": "npm run build",
     "preview": "vite preview --host 127.0.0.1 --port 4174"
   },
   "peerDependencies": {
-    "react": ">=18.2.0 <20",
-    "react-dom": ">=18.2.0 <20"
+    "react": ">=18.2.0 <20"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
@@ -53,6 +68,6 @@
     "vite": "8.3.6"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=22.12"
   }
 }

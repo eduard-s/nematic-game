@@ -18,23 +18,23 @@ The particles use flat colors without shadows or highlights.
 The component and canvas can show the host page background.
 The component has no pinned sections or inner scroll containers.
 
-[Open the lab](https://esmirnov.ai/nematic-game/) · [Component API](docs/API.md) · [Model and limits](docs/MODEL.md) · [Demo deployment](docs/DEPLOY.md)
+[Open the lab](https://esmirnov.ai/nematic-game/) · [npm package](https://www.npmjs.com/package/nematic-game) · [Component API](docs/API.md) · [Model and limits](docs/MODEL.md) · [Demo deployment](docs/DEPLOY.md)
 
 ## Install the component
 
-Use Node.js 24 or later for development.
+Use Node.js 22.12 or later.
 The component needs React 18.2 or React 19.
 Install React in the host app.
 
 ```sh
-npm install https://github.com/eduard-s/nematic-game/archive/refs/tags/v0.2.0.tar.gz
+npm install nematic-game react react-dom
 ```
 
 Import the component and its stylesheet.
 
 ```tsx
-import { NematicLab } from "@eduard-s/nematic-game";
-import "@eduard-s/nematic-game/styles.css";
+import { NematicLab } from "nematic-game";
+import "nematic-game/styles.css";
 
 export function MyPage() {
   return <NematicLab />;
@@ -121,6 +121,11 @@ Discoveries do not stop free play.
 ## Use the engine
 
 The engine and canvas renderer do not need React.
+For that entry, install only the package.
+
+```sh
+npm install nematic-game
+```
 
 ```ts
 import {
@@ -129,7 +134,7 @@ import {
   renderNematicGame,
   DEFAULT_DISPLAY,
   resolveTheme,
-} from "@eduard-s/nematic-game/core";
+} from "nematic-game/core";
 
 const world = createNematicGame(800, 450, 42);
 stepNematicGame(world, 1 / 60);
@@ -144,11 +149,14 @@ Do the automated tests.
 ```sh
 npm test
 npm run typecheck
+npm run test:package
 npm run build:demo
 ```
 
 The repository includes the compiled library in `dist/`.
-The fixed Git tag includes the compiled files.
+The npm package includes the compiled files and documentation.
+The `prepack` script compiles the library before npm creates the package archive.
+The `test:package` script examines the archive in clean installations.
 After changes to the source, regenerate the library.
 
 ```sh
