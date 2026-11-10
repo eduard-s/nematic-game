@@ -17,6 +17,9 @@ Keep all six groups visible without collapsible sections.
 Put Readouts and Things to try below the field, outside Controls.
 
 Use native sliders, selects, and checkboxes with keyboard input.
+Put each slider below its label and value.
+Use the full control width, an 8-pixel track, and a 20-pixel thumb.
+Give each slider a 44-pixel target.
 Use document scrolling without inner scroll containers.
 Do not use sticky or fixed sections in the component.
 

@@ -1,6 +1,6 @@
 {
   "name": "@esmirnov.ai/nematic-game",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "An interactive material lab with liquid, nematic, and solid structures, a TypeScript physics engine, and a React component.",
   "type": "module",
   "license": "MIT",
@@ -13,7 +13,15 @@
   "bugs": {
     "url": "https://github.com/eduard-s/nematic-game/issues"
   },
-  "keywords": ["nematic", "liquid-crystals", "physics", "simulation", "react", "typescript", "education"],
+  "keywords": [
+    "nematic",
+    "liquid-crystals",
+    "physics",
+    "simulation",
+    "react",
+    "typescript",
+    "education"
+  ],
   "publishConfig": {
     "access": "public"
   },
