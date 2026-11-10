@@ -38,3 +38,6 @@ After a source change, run `npm test`, `npm run typecheck`, and `npm run build:d
 Commit `dist/` with its source.
 Keep the React dependency external to the library.
 Use no backend or analytics service.
+
+Use `@esmirnov.ai/nematic-game` as the public npm package name.
+Keep the GitHub repository and demo route under `nematic-game`.

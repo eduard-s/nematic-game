@@ -1,17 +1,17 @@
 # Component API
 
-Import `NematicLab` from `nematic-game`.
+Import `NematicLab` from `@esmirnov.ai/nematic-game`.
 Import the stylesheet once in the host app.
 The package also exports `NematicGame` as an alias.
 
 ```tsx
-import { NematicLab } from "nematic-game";
-import "nematic-game/styles.css";
+import { NematicLab } from "@esmirnov.ai/nematic-game";
+import "@esmirnov.ai/nematic-game/styles.css";
 
 <NematicLab />;
 ```
 
-Import the engine and canvas renderer from `nematic-game/core`.
+Import the engine and canvas renderer from `@esmirnov.ai/nematic-game/core`.
 That entry does not import React.
 The package supports Node.js 22.12 or later.
 The visual component needs a host installation of React 18.2 or React 19.

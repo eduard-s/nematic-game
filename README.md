@@ -18,23 +18,26 @@ The particles use flat colors without shadows or highlights.
 The component and canvas can show the host page background.
 The component has no pinned sections or inner scroll containers.
 
-[Open the lab](https://esmirnov.ai/nematic-game/) · [npm package](https://www.npmjs.com/package/nematic-game) · [Component API](docs/API.md) · [Model and limits](docs/MODEL.md) · [Demo deployment](docs/DEPLOY.md)
+[Open the lab](https://esmirnov.ai/nematic-game/) · [npm package](https://www.npmjs.com/package/@esmirnov.ai/nematic-game) · [Component API](docs/API.md) · [Model and limits](docs/MODEL.md) · [Demo deployment](docs/DEPLOY.md)
 
 ## Install the component
+
+The public package is `@esmirnov.ai/nematic-game`.
+Use this name in installation commands and imports.
 
 Use Node.js 22.12 or later.
 The component needs React 18.2 or React 19.
 Install React in the host app.
 
 ```sh
-npm install nematic-game react react-dom
+npm install @esmirnov.ai/nematic-game react react-dom
 ```
 
 Import the component and its stylesheet.
 
 ```tsx
-import { NematicLab } from "nematic-game";
-import "nematic-game/styles.css";
+import { NematicLab } from "@esmirnov.ai/nematic-game";
+import "@esmirnov.ai/nematic-game/styles.css";
 
 export function MyPage() {
   return <NematicLab />;
@@ -124,7 +127,7 @@ The engine and canvas renderer do not need React.
 For that entry, install only the package.
 
 ```sh
-npm install nematic-game
+npm install @esmirnov.ai/nematic-game
 ```
 
 ```ts
@@ -134,7 +137,7 @@ import {
   renderNematicGame,
   DEFAULT_DISPLAY,
   resolveTheme,
-} from "nematic-game/core";
+} from "@esmirnov.ai/nematic-game/core";
 
 const world = createNematicGame(800, 450, 42);
 stepNematicGame(world, 1 / 60);

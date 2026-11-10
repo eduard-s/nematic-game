@@ -12,7 +12,7 @@ const npm = (args, cwd = temp) => execFileSync("npm", args, { cwd, encoding: "ut
 const node = source => execFileSync(process.execPath, ["--input-type=module", "-e", source], { cwd: temp, encoding: "utf8" });
 
 try {
-  assert.equal(manifest.name, "nematic-game", "Use the public npm package name.");
+  assert.equal(manifest.name, "@esmirnov.ai/nematic-game", "Use the public npm package name.");
   const [pack] = JSON.parse(npm(["pack", "--json", "--ignore-scripts", "--pack-destination", temp], root));
   const paths = pack.files.map(({ path }) => path);
   for (const path of [
@@ -39,7 +39,7 @@ try {
 
   writeFileSync(join(temp, "package.json"), JSON.stringify({ private: true, type: "module" }));
   npm(["install", "--ignore-scripts", "--no-audit", "--no-fund", resolve(temp, pack.filename)]);
-  const installedRoot = join(temp, "node_modules/nematic-game");
+  const installedRoot = join(temp, "node_modules", "@esmirnov.ai", "nematic-game");
   const installed = JSON.parse(readFileSync(join(installedRoot, "package.json"), "utf8"));
   assert.equal(installed.version, manifest.version);
   const lock = JSON.parse(readFileSync(join(temp, "package-lock.json"), "utf8"));
@@ -54,7 +54,7 @@ try {
     import assert from 'node:assert/strict';
     import { fileURLToPath } from 'node:url';
     import { readFileSync } from 'node:fs';
-    import { createNematicGame, stepNematicGame, materialMetrics, setMaterialMode, resolveOptions, createConfiguredNematicGame } from 'nematic-game/core';
+    import { createNematicGame, stepNematicGame, materialMetrics, setMaterialMode, resolveOptions, createConfiguredNematicGame } from '@esmirnov.ai/nematic-game/core';
     const world = createNematicGame(640, 360, 42);
     stepNematicGame(world, 1 / 60);
     assert(world.time > 0);
@@ -70,7 +70,7 @@ try {
     const configured = createConfiguredNematicGame(640, 360, 7, options);
     assert.equal(configured.mode, 'liquid');
     assert.equal(configured.ions.length, 0);
-    const css = fileURLToPath(import.meta.resolve('nematic-game/styles.css'));
+    const css = fileURLToPath(import.meta.resolve('@esmirnov.ai/nematic-game/styles.css'));
     assert(readFileSync(css, 'utf8').includes('.nematic-game'));
     process.stdout.write(JSON.stringify({ phase: world.mode, rods: world.rods.length, css: true }));
   `));
@@ -78,7 +78,7 @@ try {
   assert(core.rods > 0 && core.css);
 
   writeFileSync(join(temp, "core-consumer.mts"), `
-    import { createNematicGame, stepNematicGame, type NematicGame, type NematicOptions } from 'nematic-game/core';
+    import { createNematicGame, stepNematicGame, type NematicGame, type NematicOptions } from '@esmirnov.ai/nematic-game/core';
     const options: NematicOptions = { initialMode: 'nematic', seed: 42 };
     const world: NematicGame = createNematicGame(640, 360, options.seed ?? 42);
     stepNematicGame(world, 1 / 60);
@@ -92,10 +92,10 @@ try {
       import assert from 'node:assert/strict';
       import React from 'react';
       import { renderToString } from 'react-dom/server';
-      import { NematicLab, NematicGame } from 'nematic-game';
+      import { NematicLab, NematicGame } from '@esmirnov.ai/nematic-game';
       assert.equal(NematicLab, NematicGame);
       if (${JSON.stringify("./react" in manifest.exports)}) {
-        const entry = await import('nematic-game/react');
+        const entry = await import('@esmirnov.ai/nematic-game/react');
         assert.equal(entry.NematicLab, NematicLab);
       }
       process.stdout.write(renderToString(React.createElement(NematicLab, { seed: 42, storageKey: false, transparentCanvas: true })));
