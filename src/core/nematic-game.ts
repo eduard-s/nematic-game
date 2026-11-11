@@ -1,3 +1,5 @@
+import { brushMultiplier, particleCount, particleDragMultiplier, rodDragMultiplier, screeningLength } from "./parameter-scales.js";
+
 export type Point = { x: number; y: number };
 export type MaterialParameters = {
   heat: number; density: number; alignment: number; rodLength: number;
@@ -60,7 +62,7 @@ export function setEnvironmentParameters(world: NematicGame, next: EnvironmentPa
     electricResponse: clamp(next.electricResponse, -1, 1), magneticResponse: clamp(next.magneticResponse, -1, 1),
     chargeStrength: clamp(next.chargeStrength, 0.1, 2), ionMobility: clamp(next.ionMobility, 0, 1), screening: clamp(next.screening, 0, 1)
   };
-  const count = Math.round(world.environment.ions * 48) * 2;
+  const count = particleCount(world.environment.ions);
   if (world.ions.length > count) world.ions.length = count;
   while (world.ions.length < count) world.ions.push({
     x: 22 + random(world) * (world.width - 44), y: 22 + random(world) * (world.height - 44),
@@ -201,7 +203,7 @@ export function applyMaterialBrush(world: NematicGame, point: Point, delta: Poin
   if (delta.x * delta.x + delta.y * delta.y > 1) world.brushAngle = Math.atan2(delta.y, delta.x);
   if (tool === "stir") stirMaterial(world, point, delta, pulse);
   else {
-    const radius = Math.min(110, world.width * 0.3), strength = 0.25 + world.params.stirring * 1.5;
+    const radius = Math.min(110, world.width * 0.3), strength = brushMultiplier(world.params.stirring);
     let affected = 0;
     for (const rod of world.rods) {
       const dx = rod.x - point.x, dy = rod.y - point.y, d = Math.hypot(dx, dy);
@@ -266,7 +268,7 @@ function physicsScratch(world: NematicGame) {
 export function stirMaterial(world: NematicGame, point: Point, delta: Point = { x: 0, y: 0 }, pulse = false) {
   if (world.paused) return;
   const radius = Math.min(100, world.width * 0.28);
-  const strength = 0.25 + world.params.stirring * 1.5;
+  const strength = brushMultiplier(world.params.stirring);
   if (pulse) {
     world.rings.push({ ...point, life: 1 });
     if (world.rings.length > 5) world.rings.shift();
@@ -319,7 +321,7 @@ export function stepIons(world: NematicGame, dt: number) {
       // be switched off without removing the tracer particles.
       let force = env.charged ? 2300 * a.polarity * b.polarity * env.chargeStrength ** 2 / Math.pow(d2 + 81, 1.5) : 0;
       if (env.screening > 0) {
-        const lambda = (1.05 - env.screening) * 100 / env.screening, scaled = Math.sqrt(d2 + 81) / lambda;
+        const lambda = screeningLength(env.screening), scaled = Math.sqrt(d2 + 81) / lambda;
         force *= (1 + scaled) * Math.exp(-scaled);
       }
       if (d < 14 && d > 0.01) force += (1 - d / 14) * 180 / d;
@@ -332,7 +334,7 @@ export function stepIons(world: NematicGame, dt: number) {
       fx[i] += dx * push; fy[i] += dy * push;
     }
   }
-  const mobilityDrag = 1.1 * Math.exp((0.5 - env.ionMobility) * 3);
+  const mobilityDrag = 1.1 * particleDragMultiplier(env.ionMobility);
   const damping = Math.exp(-dt * (mobilityDrag + world.solidness * 1.8));
   const noise = world.params.heat * 70 * Math.sqrt(dt);
   ions.forEach((ion, i) => {
@@ -399,7 +401,7 @@ export function stepNematicGame(world: NematicGame, seconds: number) {
     if (env.magneticPlane === "in-plane") turns[i] += env.magneticResponse * env.magnetic ** 2 * 22 * Math.sin(2 * (-env.magneticAngle * Math.PI / 180 - r.angle));
   }
   const noise = Math.pow(heat, 1.15) * (world.mode === "liquid" ? 12 : 5), rootDt = Math.sqrt(dt);
-  const dragFactor = Math.exp((world.params.viscosity - 0.35) * 2);
+  const dragFactor = rodDragMultiplier(world.params.viscosity);
   const angularMobility = 1 / dragFactor;
   const damping = Math.exp(-dt * (3 * dragFactor + solid * 12));
   rods.forEach((r, i) => {

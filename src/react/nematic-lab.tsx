@@ -2,8 +2,9 @@
 
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import copy from "./copy.json" with { type: "json" };
-import { applyMaterialBrush, clearGameInput, createNematicGame, DEFAULT_ENVIRONMENT, DEFAULT_MATERIAL, materialMetrics, resizeNematicGame, setEnvironmentParameters, setMaterialMode, setMaterialParameters, stepNematicGame, stirMaterial, type Discovery, type MaterialTool, type Point, type EnvironmentParameters, type MagneticPlane, type MaterialParameters, type MaterialPhase, type NematicGame as World } from "../core/nematic-game.js";
+import { applyMaterialBrush, clearGameInput, materialMetrics, resizeNematicGame, setEnvironmentParameters, setMaterialMode, setMaterialParameters, stepNematicGame, stirMaterial, type Discovery, type MaterialTool, type Point, type EnvironmentParameters, type MagneticPlane, type MaterialParameters, type MaterialPhase, type NematicGame as World } from "../core/nematic-game.js";
 import { DEFAULT_DISPLAY, renderNematicGame, type MaterialDisplay } from "../core/nematic-renderer.js";
+import { environmentReadouts, materialReadouts, type EnvironmentSlider } from "./parameter-readouts.js";
 
 const tools: MaterialTool[] = ["stir", "swirl", "pull", "comb"];
 import { createConfiguredNematicGame, resolveOptions, type NematicOptions } from "../core/options.js";
@@ -20,36 +21,36 @@ function ToolIcon({ tool }: { tool: MaterialTool }) {
 }
 
 const initialMetrics = { order: 0, count: 0, ionCount: 0, phase: "nematic" as MaterialPhase, settling: false, motion: 0, latticeError: 0, director: 0 };
-type EnvironmentSlider = "electric" | "electricAngle" | "magnetic" | "magneticAngle" | "ions" | "electricResponse" | "magneticResponse" | "chargeStrength" | "ionMobility" | "screening";
-
 function EnvironmentRange({ name, label, hint, value, min = 0, max = 100, degrees = false, disabled, onChange }: {
   name: EnvironmentSlider; label: string; hint?: string; value: number; min?: number; max?: number; degrees?: boolean; disabled: boolean; onChange: (value: number) => void;
 }) {
-  const id = useId(), shown = Math.round(degrees ? value : value * 100);
+  const id = useId(), position = Math.round(degrees ? value : value * 100);
+  const readout = environmentReadouts[name](value);
   const shortLabel: Record<EnvironmentSlider, string> = { electric: "Strength", electricAngle: "Direction", electricResponse: "Rod response", magnetic: "Strength", magneticAngle: "Direction", magneticResponse: "Rod response", ions: "Amount", chargeStrength: "Charge", ionMobility: "Mobility", screening: "Screening" };
   return <div className="material-parameter material-field-range">
-    <div className="material-parameter-label"><label htmlFor={id}>{shortLabel[name]}</label><output htmlFor={id}>{shown}<span>{degrees ? "°" : "%"}</span></output></div>
+    <div className="material-parameter-label"><label htmlFor={id}>{shortLabel[name]}</label><output htmlFor={id}>{readout.text}</output></div>
     {hint && <p id={`${id}-hint`}>{hint}</p>}
-    <input id={id} type="range" min={min} max={max} step={1} value={shown} disabled={disabled}
-      aria-label={label} title={hint} aria-describedby={hint ? `${id}-hint` : undefined} aria-valuetext={degrees ? `${shown} degrees` : `${shown} percent, relative scale`}
-      style={{ "--range-progress": `${(shown - min) / (max - min) * 100}%` } as CSSProperties}
+    <input id={id} type="range" min={min} max={max} step={1} value={position} disabled={disabled}
+      aria-label={label} title={hint} aria-describedby={hint ? `${id}-hint` : undefined} aria-valuetext={readout.spoken ?? readout.text}
+      style={{ "--range-progress": `${(position - min) / (max - min) * 100}%` } as CSSProperties}
       onChange={event => onChange(Number(event.target.value) / (degrees ? 1 : 100))} />
   </div>;
 }
 
-function MaterialRange({ parameter, params, disabled, modeDisabled, onChange }: {
+function MaterialRange({ parameter, params, rodCount = 0, disabled, modeDisabled, onChange }: {
   parameter: { id: string; label: string; shortLabel?: string; description: string; low: string; high: string; modeHint?: string };
-  params: MaterialParameters; disabled: boolean; modeDisabled?: boolean;
+  params: MaterialParameters; rodCount?: number; disabled: boolean; modeDisabled?: boolean;
   onChange: (key: keyof MaterialParameters, value: number) => void;
 }) {
   const id = useId();
-  const key = parameter.id as keyof MaterialParameters, percent = Math.round(params[key] * 100);
+  const key = parameter.id as keyof MaterialParameters, position = Math.round(params[key] * 100);
+  const readout = materialReadouts[key](params[key], rodCount);
   return <div className="material-parameter">
-    <div className="material-parameter-label"><label htmlFor={id}>{parameter.shortLabel ?? parameter.label}</label><output htmlFor={id}>{percent}<span>%</span></output></div>
+    <div className="material-parameter-label"><label htmlFor={id}>{parameter.shortLabel ?? parameter.label}</label><output htmlFor={id}>{readout.text}</output></div>
     <p id={`${id}-hint`}>{modeDisabled ? parameter.modeHint : parameter.description}</p>
-    <input id={id} type="range" min={0} max={100} step={1} value={percent} disabled={disabled || modeDisabled}
-      aria-label={parameter.label} title={`${modeDisabled ? parameter.modeHint : parameter.description} ${parameter.low} to ${parameter.high}.`} aria-describedby={`${id}-hint`} aria-valuetext={`${percent} percent, relative scale`}
-      style={{ "--range-progress": `${percent}%` } as CSSProperties}
+    <input id={id} type="range" min={0} max={100} step={1} value={position} disabled={disabled || modeDisabled}
+      aria-label={parameter.label} title={`${modeDisabled ? parameter.modeHint : parameter.description} ${parameter.low} to ${parameter.high}.`} aria-describedby={`${id}-hint`} aria-valuetext={readout.spoken ?? readout.text}
+      style={{ "--range-progress": `${position}%` } as CSSProperties}
       onChange={event => onChange(key, Number(event.target.value) / 100)} />
     <div className="material-range-ends" aria-hidden="true"><span>{parameter.low}</span><span>{parameter.high}</span></div>
   </div>;
@@ -296,7 +297,7 @@ export function NematicLab(props: NematicLabProps = {}) {
         <div className="material-controls-left">
         <fieldset className="material-field-group material-base-group"><legend>{copy.materialTitle}</legend>
         <div className="material-sliders">
-          {copy.parameters.map(parameter => <MaterialRange key={parameter.id} parameter={parameter} params={params} disabled={!ready}
+          {copy.parameters.map(parameter => <MaterialRange key={parameter.id} parameter={parameter} params={params} rodCount={metrics.count} disabled={!ready}
             modeDisabled={parameter.id === "alignment" && selectedMode === "liquid"} onChange={(key, value) => update({ ...params, [key]: value })} />)}
         </div>
         </fieldset>
@@ -366,7 +367,7 @@ export function NematicLab(props: NematicLabProps = {}) {
       <section className="material-readouts" aria-labelledby={`${instanceId}-readouts-title`}>
         <h2 id={`${instanceId}-readouts-title`}>{copy.groups.readouts}</h2>
         <dl className="material-stats">
-          <div><dt>{copy.orderLabel}</dt><dd className="material-order"><progress id={`${instanceId}-order`} aria-label={copy.orderLabel} max={1} value={metrics.order} /><output>{Math.round(metrics.order * 100)}%</output></dd></div>
+          <div><dt>{copy.orderLabel}</dt><dd className="material-order"><progress id={`${instanceId}-order`} aria-label={copy.orderLabel} aria-valuetext={`${metrics.order.toFixed(2)} out of 1`} title={copy.orderHint} max={1} value={metrics.order} /><output>{metrics.order.toFixed(2)}</output></dd></div>
           <div><dt>{copy.motionLabel}</dt><dd>{metrics.motion.toFixed(1)} <span>px/s</span></dd></div>
           <div><dt>{copy.latticeLabel}</dt><dd>{selectedMode === "solid" ? `${metrics.latticeError.toFixed(1)} px` : "Free"}</dd></div>
           <div><dt>{copy.directorLabel}</dt><dd>{metrics.order > 0.15 ? `${Math.round(metrics.director)}°` : "Unordered"}</dd></div>

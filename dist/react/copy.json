@@ -61,7 +61,7 @@
         {
             "id": "rodLength",
             "label": "Rod length",
-            "description": "Changes molecular shape and collision spacing.",
+            "description": "Nominal length in simulation pixels. The drawing scales to fit narrow samples.",
             "low": "Short",
             "high": "Long"
         },
@@ -109,7 +109,7 @@
         }
     ],
     "orderLabel": "Orientational order",
-    "orderHint": "Measured from the rods on screen.",
+    "orderHint": "0 means no shared axis. 1 means perfectly aligned rods.",
     "motionLabel": "Rod speed (RMS)",
     "latticeLabel": "Lattice drift",
     "directorLabel": "Shared axis",
@@ -151,11 +151,11 @@
         "amountLabel": "Particle amount",
         "chargeLabel": "Electrical charge",
         "chargeStrength": "Charge strength",
-        "chargeHint": "Relative charge magnitude. 100% is the default.",
+        "chargeHint": "1× is the default magnitude of an ion’s charge.",
         "ionMobility": "Particle mobility",
-        "mobilityHint": "Higher values reduce particle drag.",
+        "mobilityHint": "Relative to the default particle mobility, before any drag from the lattice.",
         "screening": "Electrostatic screening",
-        "screeningHint": "Shortens ion-to-ion forces. Zero leaves them unscreened.",
+        "screeningHint": "Increasing screening shortens the distance over which ions interact.",
         "chargedLabel": "Charged ions",
         "neutralLabel": "Neutral tracers",
         "chargedHint": "Equal positive and negative ions. Opposite charges attract.",
@@ -165,7 +165,7 @@
         "demoLabel": "Crossed fields",
         "clearLabel": "Clear fields"
     },
-    "modelNote": "Illustrative 2D model. Structure prepares a sample without changing your settings: liquid has no orientational coupling, nematic has base coupling, solid keeps spring-bound sites. Heat drives noise and softens springs. Fields stay uniform; ion forces are softened and optionally screened. Distances and speeds use simulation pixels. No reaction chemistry or calculated equilibrium phase diagram. Brushes apply local forces or orientation changes. Crossed polarizers is an illustrative orientation filter.",
+    "modelNote": "Illustrative 2D model. Structure prepares a sample without changing your settings: liquid has no orientational coupling, nematic has base coupling, solid keeps spring-bound sites. Heat drives noise and softens springs. Fields stay uniform; ion forces are softened and optionally screened. Distances and speeds use simulation pixels. A setting of 1× is the model default for damping, brush strength, charge, and mobility. Orientational order is an index from 0 to 1. No reaction chemistry or calculated equilibrium phase diagram. Brushes apply local forces or orientation changes. Crossed polarizers is an illustrative orientation filter.",
     "accessibleLabel": "Live material sample. Hold or drag to use the selected brush. Keys 1 to 4 select Stir, Swirl, Pull or Comb. Arrows move the brush; Space applies it. Escape pauses or resumes. The controls change the material, fields, and particles.",
     "fallback": "This playground needs JavaScript and a browser with Canvas support.",
     "tools": {

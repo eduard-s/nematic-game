@@ -1,4 +1,5 @@
 import { fieldVector } from "./nematic-game.js";
+import { nominalRodLength } from "./parameter-scales.js";
 import { DEFAULT_THEME, rgb, alpha } from "./theme.js";
 const palettes = new WeakMap();
 function colorsFor(theme) {
@@ -166,7 +167,7 @@ export function renderNematicGame(ctx, world, reducedMotion, display = DEFAULT_D
             }
         ctx.stroke();
     }
-    const length = Math.max(10, (14 + world.params.rodLength * 30) * Math.min(1, w / 500));
+    const length = Math.max(10, nominalRodLength(world.params.rodLength) * Math.min(1, w / 500));
     rods.forEach(r => {
         ctx.save();
         ctx.translate(r.x, r.y);

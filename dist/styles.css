@@ -75,7 +75,6 @@
 .nematic-game .material-parameter input[type="range"] { grid-column: 1 / -1; grid-row: 2; }
 .nematic-game .material-parameter-label label { font-size: 13px; line-height: 18px; }
 .nematic-game .material-parameter-label output { flex-shrink: 0; color: color-mix(in oklch, var(--ink) 80%, transparent); font-size: 12px; line-height: 18px; font-variant-numeric: tabular-nums; }
-.nematic-game .material-parameter-label output span { margin-left: 2px; font-size: 10px; }
 .nematic-game .material-parameter input[type="range"] { appearance: none; -webkit-appearance: none; display: block; width: 100%; min-width: 0; height: 44px; margin: 0; padding: 0; border: 0; background: transparent; accent-color: var(--accent); cursor: pointer; }
 .nematic-game .material-parameter input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(to right, var(--accent) 0 var(--range-progress), var(--track) var(--range-progress) 100%); }
 .nematic-game .material-parameter input[type="range"]::-moz-range-track { height: 8px; border-radius: 999px; background: var(--track); }

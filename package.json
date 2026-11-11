@@ -1,6 +1,6 @@
 {
   "name": "@esmirnov.ai/nematic-game",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "An interactive material lab with liquid, nematic, and solid structures, a TypeScript physics engine, and a React component.",
   "type": "module",
   "license": "MIT",
